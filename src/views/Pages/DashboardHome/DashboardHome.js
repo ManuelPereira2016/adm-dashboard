@@ -10,6 +10,7 @@ import {
   Row,
   Table
 } from "reactstrap";
+import DefaultLayout from '../../../containers/DefaultLayout';
 import Widget02 from "../../Widgets/Widget02";
 import Widget03 from "../../Widgets/Widget03";
 import { CustomTooltips } from "@coreui/coreui-plugin-chartjs-custom-tooltips";
@@ -536,6 +537,7 @@ class DashboardHome extends Component {
 
   render() {
     return (
+        <DefaultLayout>
       <div className="animated fadeIn">
         <Row>
           <Col xs="12" sm="6" lg="3">
@@ -672,6 +674,7 @@ class DashboardHome extends Component {
           </Col>
         </Row>
       </div>
+      </DefaultLayout>
     );
   }
 }

@@ -1,39 +1,86 @@
-import React, { Component } from 'react';
-import { HashRouter, Route, Switch } from 'react-router-dom';
-import './App.css';
-// Styles
-// CoreUI Icons Set
-import '@coreui/icons/css/coreui-icons.min.css';
-// Import Flag Icons Set
-import 'flag-icon-css/css/flag-icon.min.css';
-// Import Font Awesome Icons Set
-import 'font-awesome/css/font-awesome.min.css';
-// Import Simple Line Icons Set
-import 'simple-line-icons/css/simple-line-icons.css';
-// Import Main styles for this application
-import './scss/style.css'
-
-// Containers
-import { DefaultLayout } from './containers';
-// Pages
-import { Login, Page404, Page500, HighUserForm } from './views/Pages';
-
-// import { renderRoutes } from 'react-router-config';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
+import AdminRoute from "./containers/AdminRoute/AdminRoute";
+import SplashScreen from "./views/Pages/SplashScreen/SplashScreen";
+import { connect } from "react-redux";
+import { push } from "connected-react-router";
+import { isAuthed } from "./redux/modules/actionsCreators/authentication";
+import { appLoadingSuccess } from "./redux/modules/actionsCreators/app";
+import { getAppLoadingBool } from "./redux/modules/selectors/app";
+import { getLoginToken, removeLoginToken } from "./utils/utils";
+import { getAuthData } from "./api/auth";
+import { getUsers } from "./api/user";
+import { routes, adminRoutes } from "./routes";
+import { withRouter } from "react-router-dom";
+import "./scss/style.css";
 
 class App extends Component {
+  static propTypes = {
+    isAppLoading: PropTypes.bool.isRequired
+  };
+
+  async componentWillMount() {
+    const authToken = getLoginToken();
+
+    try {
+      if (authToken) {
+        const data = await getAuthData();
+
+        if (data.error === 1 && data.data.includes("Token")) {
+            removeLoginToken();
+        } else {
+          await this.props.dispatch(isAuthed(data));
+        }
+      }
+    } catch (err) {
+        removeLoginToken();
+    }
+    finally {
+        this.props.dispatch(appLoadingSuccess());
+    }
+  }
+
   render() {
+    const { isAppLoading } = this.props;
+
+    if (isAppLoading) {
+      return <SplashScreen />;
+    }
+
     return (
-      <HashRouter>
-        <Switch>
-          <Route exact path="/login" name="Login" component={Login} />
-          <Route exact path="/register" name="Dar de alta" component={HighUserForm} />
-          <Route exact path="/404" name="Page 404" component={Page404} />
-          <Route exact path="/500" name="Page 500" component={Page500} />
-          <Route path="/" name="Home" component={DefaultLayout} />
-        </Switch>
-      </HashRouter>
+      <Switch>
+        {adminRoutes.map((route, idx) => {
+          return route.component ? (
+            <AdminRoute
+              key={idx}
+              path={route.path}
+              exact={route.exact}
+              name={route.name}
+              component={route.component}
+            />
+          ) : null;
+        })}
+        {routes.map((route, idx) => {
+          return route.component ? (
+            <Route
+              key={idx}
+              path={route.path}
+              exact={route.exact}
+              name={route.name}
+              render={props => <route.component {...props} />}
+            />
+          ) : null;
+        })}
+      </Switch>
     );
   }
 }
 
-export default App;
+function mapStateToProps(state) {
+  return {
+    isAppLoading: getAppLoadingBool(state)
+  };
+}
+
+export default withRouter(connect(mapStateToProps)(App));

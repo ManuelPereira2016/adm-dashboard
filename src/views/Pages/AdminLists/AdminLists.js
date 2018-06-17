@@ -22,15 +22,18 @@ import {
   Input,
   UncontrolledTooltip
 } from "reactstrap";
+import DefaultLayout from '../../../containers/DefaultLayout';
+import MDSpinner from "react-md-spinner";
 
 class AdminLists extends Component {
   render() {
     return (
+        <DefaultLayout>
       <Row>
         <Col xs="12" sm="12" lg="12">
           <Card>
             <CardHeader className="custom-card-header">
-              <CardTitle className="mb-0 border-bottom">Opciones </CardTitle>
+              <CardTitle className="mb-0 border-bottom">Listas </CardTitle>
             </CardHeader>
             <CardBody className="text-dark">
               <div className="custom-header">
@@ -155,6 +158,7 @@ class AdminLists extends Component {
           </Card>
         </Col>
       </Row>
+      </DefaultLayout>
     );
   }
 }

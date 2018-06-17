@@ -1,4 +1,8 @@
 @charset "UTF-8";
+@import url(../../node_modules/@coreui/icons/css/coreui-icons.min.css);
+@import url(../../node_modules/flag-icon-css/css/flag-icon.min.css);
+@import url(../../node_modules/font-awesome/css/font-awesome.min.css);
+@import url(../../node_modules/simple-line-icons/css/simple-line-icons.css);
 /*!
  * CoreUI - Open Source Dashboard UI Kit
  * @version v2.0.2
@@ -9971,6 +9975,9 @@ body {
       .legend-colors .legend .fa.red {
         color: #f86c6b; }
 
+.icon-action a:focus, .icon-action a:hover, .icon-action a:active {
+  text-decoration: none; }
+
 .icon-action i {
   cursor: pointer; }
 
@@ -9988,6 +9995,26 @@ body {
   align-items: center; }
   .custom-header .card-header-actions {
     margin-right: 0; }
+
+.table-blank th, .table-blank td {
+  background-color: #fff !important;
+  border-color: #fff !important; }
+
+.vertical-radio * {
+  position: relative;
+  display: block;
+  padding-left: 1.25rem; }
+
+.loading-screen {
+  height: calc(100vh - 105px);
+  display: flex;
+  justify-content: center;
+  align-items: center; }
+
+.my-dropdown {
+  height: 35px;
+  margin: 0 10px;
+  border-radius: 50em; }
 
 html body .app.flex-row.align-items-center {
   height: 100vh; }

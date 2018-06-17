@@ -1,6 +1,4 @@
 // Here you can add other styles
-
-
 .card {
     border-radius: 0;
 
@@ -58,6 +56,10 @@
 
 // table actions
 .icon-action {
+    a:focus, a:hover, a:active {
+        text-decoration: none;
+    }
+
     i {
         cursor: pointer;
     }
@@ -82,4 +84,33 @@
     .card-header-actions {
         margin-right: 0;
     }
+}
+
+.table-blank {
+    th,td {
+        background-color: #fff !important;
+        border-color: #fff !important;
+    }
+}
+
+.vertical-radio {
+    * {
+        position: relative;
+        display: block;
+        padding-left: 1.25rem;
+    }
+}
+
+.loading-screen {
+    height: calc(100vh - 105px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.my-dropdown {
+    height: 35px;
+    margin: 0 10px;
+    border-radius: 50em;
+
 }
