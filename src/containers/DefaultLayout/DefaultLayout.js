@@ -5,7 +5,6 @@ import { Container } from "reactstrap";
 import {
   AppAside,
   AppBreadcrumb,
-  AppFooter,
   AppHeader,
   AppSidebar,
   AppSidebarFooter,
@@ -17,7 +16,6 @@ import {
 import { push } from 'connected-react-router';
 import { connect } from "react-redux";
 import DefaultAside from "./DefaultAside";
-import DefaultFooter from "./DefaultFooter";
 import DefaultHeader from "./DefaultHeader";
 import navigation from "../../_nav";
 import { routes, adminRoutes } from "../../routes";
@@ -52,9 +50,6 @@ class DefaultLayout extends Component {
             <DefaultAside />
           </AppAside>
         </div>
-        <AppFooter>
-          <DefaultFooter />
-        </AppFooter>
       </div>
     );
   }
