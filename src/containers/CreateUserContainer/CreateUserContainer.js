@@ -14,7 +14,8 @@ class CreateUserContainer extends Component {
 
   state = {
     isLoading: true,
-    isProcessing: false
+    isProcessing: false,
+    processingMessage: ''
   };
 
   constructor(props) {
@@ -26,13 +27,13 @@ class CreateUserContainer extends Component {
   componentWillMount() {
     this.user = null;
     this.services = [];
-  }
 
-  componentDidMount() {
     if (this.props.location.state) {
       this.user = this.props.location.state.userData;
     }
+  }
 
+  componentDidMount() {
     this.loadData();
   }
 
@@ -69,6 +70,9 @@ class CreateUserContainer extends Component {
       if (key !== "password2") {
         data[key] = value;
       }
+      else if (key === "id_servicio") {
+          data[key] = parseInt(value, 10);
+      }
     });
 
     try {
@@ -80,11 +84,28 @@ class CreateUserContainer extends Component {
 
         const response = await updateUser(updatedData);
 
-        debugger;
+        if (response.data) {
+            await this.setState({
+                processingMessage: response.data
+            });
+        }
+
+        setTimeout(() => {
+            this.props.dispatch(push("/admin/users"));
+        }, 1000);
+
       } else {
         const response = await register(data);
 
-        debugger;
+        if (response.data) {
+            await this.setState({
+                processingMessage: response.data
+            });
+        }
+
+        setTimeout(() => {
+            this.props.dispatch(push("/admin/users"));
+        }, 1000);
       }
     } catch (err) {
       console.error(err);
@@ -103,9 +124,11 @@ class CreateUserContainer extends Component {
     return (
       <CreateUser
         onCancel={this.onCancel}
+        user={this.user}
         dispatch={this.props.dispatch}
         formRef={this.formRef}
         services={this.services}
+        processingMessage={this.state.processingMessage}
         isLoading={this.state.isLoading}
         isProcessing={this.state.isProcessing}
         onSubmit={this.onSubmit}

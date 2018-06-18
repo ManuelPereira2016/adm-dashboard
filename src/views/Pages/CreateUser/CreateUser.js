@@ -10,6 +10,7 @@ import {
   Input,
   InputGroup,
   InputGroupAddon,
+  UncontrolledAlert,
   InputGroupText,
   Row
 } from "reactstrap";
@@ -18,9 +19,11 @@ import MDSpinner from "react-md-spinner";
 class CreateUser extends Component {
   static propTypes = {
     onCancel: PropTypes.func.isRequired,
+    user: PropTypes.object,
     onSubmit: PropTypes.func.isRequired,
     formRef: PropTypes.object.isRequired,
     services: PropTypes.array.isRequired,
+    processingMessage: PropTypes.string.isRequired,
     isLoading: PropTypes.bool.isRequired,
     isProcessing: PropTypes.bool.isRequired
   };
@@ -46,7 +49,7 @@ class CreateUser extends Component {
               <i className="icon-user" />
             </InputGroupText>
           </InputGroupAddon>
-          <Input type="text" name="nombre" placeholder="Nombres" />
+          <Input type="text" name="nombre" placeholder="Nombres" defaultValue={this.props.user ? this.props.user.nombre : ''} />
         </InputGroup>
         <InputGroup className="mb-3">
           <InputGroupAddon addonType="prepend">
@@ -54,7 +57,7 @@ class CreateUser extends Component {
               <i className="icon-user" />
             </InputGroupText>
           </InputGroupAddon>
-          <Input type="text" name="apellidos" placeholder="Apellidos" />
+          <Input type="text" name="apellidos" placeholder="Apellidos" defaultValue={this.props.user ? this.props.user.apellidos : ''} />
         </InputGroup>
         <InputGroup className="mb-3">
         <InputGroupAddon addonType="prepend">
@@ -70,7 +73,7 @@ class CreateUser extends Component {
             <option value="0" disabled={true} selected={true}>Servicio</option>
             {this.props.services.map((servicio, id) => {
                 return (
-                    <option key={`opt_${id}`} value={servicio.id_servicio}>{servicio.desc_servicio}</option>
+                    <option key={`opt_${id}`} selected={this.props.user ? this.props.user.id_servicio : ''} value={servicio.id_servicio}>{servicio.desc_servicio}</option>
                 );
             })}
           </Input>
@@ -79,40 +82,46 @@ class CreateUser extends Component {
           <InputGroupAddon addonType="prepend">
             <InputGroupText>@</InputGroupText>
           </InputGroupAddon>
-          <Input type="phone" name="telefono" placeholder="Telefono" />
+          <Input type="phone" name="telefono" placeholder="Telefono" defaultValue={this.props.user ? this.props.user.telefono : ''}/>
         </InputGroup>
         <InputGroup className="mb-3">
           <InputGroupAddon addonType="prepend">
             <InputGroupText>@</InputGroupText>
           </InputGroupAddon>
-          <Input type="text" name="empresa" placeholder="Empresa" />
+          <Input type="text" name="empresa" placeholder="Empresa" defaultValue={this.props.user ? this.props.user.empresa : ''} />
         </InputGroup>
         <InputGroup className="mb-3">
           <InputGroupAddon addonType="prepend">
             <InputGroupText>@</InputGroupText>
           </InputGroupAddon>
-          <Input type="text" name="email" placeholder="Email" />
+          <Input type="text" name="email" placeholder="Email" defaultValue={this.props.user ? this.props.user.email : ''} />
         </InputGroup>
-        <InputGroup className="mb-3">
-          <InputGroupAddon addonType="prepend">
-            <InputGroupText>
-              <i className="icon-lock" />
-            </InputGroupText>
-          </InputGroupAddon>
-          <Input type="password" name="password" placeholder="Password" />
-        </InputGroup>
-        <InputGroup className="mb-4">
-          <InputGroupAddon addonType="prepend">
-            <InputGroupText>
-              <i className="icon-lock" />
-            </InputGroupText>
-          </InputGroupAddon>
-          <Input
-            type="password"
-            name="password2"
-            placeholder="Repeat password"
-          />
-        </InputGroup>
+        {!this.props.user
+            ?
+            <div>
+            <InputGroup className="mb-3">
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText>
+                  <i className="icon-lock" />
+                </InputGroupText>
+              </InputGroupAddon>
+              <Input type="password" name="password" placeholder="Password"  />
+            </InputGroup>
+            <InputGroup className="mb-4">
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText>
+                  <i className="icon-lock" />
+                </InputGroupText>
+              </InputGroupAddon>
+              <Input
+                type="password"
+                name="password2"
+                placeholder="Repeat password"
+              />
+            </InputGroup>
+            </div>
+            :
+            null}
         <Button
           color="primary"
           className="px-4"
@@ -133,6 +142,14 @@ class CreateUser extends Component {
         >
           Cancel
         </Button>
+        {this.props.processingMessage
+            ?
+            <UncontrolledAlert color="info">
+            {this.props.processingMessage}
+            </UncontrolledAlert>
+            :
+            null
+        }
       </form>
     );
   }
