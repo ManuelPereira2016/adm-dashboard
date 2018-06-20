@@ -16,6 +16,8 @@
  * Copyright 2011-2018 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  */
+@import url(../../node_modules/react-select/dist/react-select.css);
+@import url(../../node_modules/react-rangeslider/lib/index.css);
 :root {
   --blue: #20a8d8;
   --indigo: #6610f2;
@@ -10015,6 +10017,21 @@ body {
   height: 35px;
   margin: 0 10px;
   border-radius: 50em; }
+
+.empty-table {
+  padding: .75rem;
+  text-align: center;
+  border: 1px solid #c8ced3; }
+
+.empty-content {
+  min-height: calc(100vh - 400px); }
+
+.td-responsive {
+  width: 150px;
+  display: block; }
+  @media (max-width: 768px) {
+    .td-responsive {
+      width: 70px; } }
 
 html body .app.flex-row.align-items-center {
   height: 100vh; }

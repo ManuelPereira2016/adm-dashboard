@@ -6,6 +6,7 @@ import { push } from 'connected-react-router';
 import { getAuthData } from '../../api/auth';
 import { getErrorMessage, getIsAuthedFlag, getIsAuthenticatingFlag, getIsAdminFlag } from '../../redux/modules/selectors/authentication';
 import { handleLogin, isAuthed } from '../../redux/modules/actionsCreators/authentication';
+import { getLoginToken } from "../../utils/utils";
 
 class LoginContainer extends Component {
   static propTypes = {
@@ -15,6 +16,16 @@ class LoginContainer extends Component {
     isAuthenticating: PropTypes.bool.isRequired,
     isAdmin: PropTypes.bool.isRequired
   };
+
+  componentWillMount() {
+      const authToken = getLoginToken();
+
+    if (authToken) {
+        if (this.props.isAuthed && !this.props.isAdmin) {
+            this.props.dispatch(push('/user/form'));
+        }
+    }
+  }
 
   async componentDidUpdate(prevProps) {
       if (!prevProps.isAuthed && this.props.isAuthed) {

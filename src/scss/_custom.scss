@@ -87,6 +87,7 @@
 }
 
 .table-blank {
+
     th,td {
         background-color: #fff !important;
         border-color: #fff !important;
@@ -113,4 +114,23 @@
     margin: 0 10px;
     border-radius: 50em;
 
+}
+
+.empty-table {
+    padding: .75rem;
+    text-align: center;
+    border: 1px solid #c8ced3;
+}
+
+.empty-content {
+    min-height: calc(100vh - 400px);
+}
+
+.td-responsive {
+    width: 150px;
+    display: block;
+
+    @media (max-width: 768px) {
+        width: 70px;
+    }
 }

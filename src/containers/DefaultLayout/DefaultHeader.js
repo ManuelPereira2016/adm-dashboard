@@ -32,7 +32,7 @@ class DefaultHeader extends Component {
           <AppHeaderDropdown direction="down">
             <DropdownToggle nav>
                 <div className='my-dropdown'>
-                    <i className='cui-options icons font-2xl d-block mt-4' />
+                    <i className='cui-options icons font-2xl d-block mt-3' />
                 </div>
             </DropdownToggle>
             <DropdownMenu right style={{ right: 'auto' }}>

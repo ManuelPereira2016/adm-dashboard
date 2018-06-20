@@ -36,18 +36,18 @@ export function getWhiteListUsers() {
 
 /**
  * Delete an user from lista negra
- * @param {Object} data { id }
+ * @param {Number} id 
  * @returns {Promise}
  */
-export function deleteUserBlackList(data) {
-    return doApiRequest('users/deletelistanegra', data, 'POST');
+export function deleteUserBlackList(id) {
+    return doApiRequest('users/deletelistanegra', { id }, 'POST');
 }
 
 /**
  * Delete an user from lista blanca
- * @param {Object} data { id }
+ * @param {Number} id
  * @returns {Promise}
  */
-export function deleteUserWhiteList(data) {
-    return doApiRequest('users/deletelistablanca', data, 'POST');
+export function deleteUserWhiteList(id) {
+    return doApiRequest('users/deletelistablanca', {id}, 'POST');
 }

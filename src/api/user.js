@@ -25,3 +25,11 @@ export function updateUser(data) {
 export function getUsers() {
     return doApiRequest('users/getUsers');
 }
+
+/**
+ * Get config
+ * @returns {Promise}
+ */
+export function getConfig(servicio) {
+    return doApiRequest('users/config', { servicio }, 'POST');
+}

@@ -1,7 +1,8 @@
-import fetch from 'cross-fetch';
+// import fetch from 'cross-fetch';
+import axios from 'axios';
 import { getLoginToken } from '../utils/utils';
 
-const API = 'http://vditelecom-env.5wedm2tsyp.us-east-1.elasticbeanstalk.com/';
+const API = 'https://api2.auntenticartuid.com/';
 
 /**
  * Method for making ajax calls to the site's api
@@ -17,13 +18,13 @@ export default async function doApiRequest(endpoint, data = null, method = 'GET'
     const authToken = getLoginToken();
 
     let options = {
+        url,
         method,
         headers: {
             'token': `${authToken || ''}`,
             'Accept': 'application/json',
         },
-        mode: 'cors',
-        body: data === null || method === 'GET' ? undefined : (contentType === 'application/json' ? JSON.stringify(data) : data)
+        data: data === null || method === 'GET' ? undefined : (contentType === 'application/json' ? JSON.stringify(data) : data)
     };
 
     if (contentType !== 'multipart/form-data') {
@@ -31,20 +32,11 @@ export default async function doApiRequest(endpoint, data = null, method = 'GET'
     }
 
     try {
-        const response = await fetch(url, options);
+        const response = await axios(options);
 
-        if (response.ok) {
-            const result = await response.text();
-
-            if (!result) {
-                let error = new Error('Respuesta invalida desde el servidor.');
-
-                error.response = response;
-                throw error;
-            }
-            else {
-                return JSON.parse(result);
-            }
+        // if (!response.data.error) {
+        if (response.data) {
+            return response.data;
         }
         else {
             let error = new Error('Algo raro ocurrio con el servidor.');

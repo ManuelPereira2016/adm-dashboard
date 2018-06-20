@@ -20,7 +20,6 @@ import {
   Row,
   Table,
   Input,
-  UncontrolledTooltip
 } from "reactstrap";
 import DefaultLayout from "../../../containers/DefaultLayout";
 import MDSpinner from "react-md-spinner";
@@ -28,12 +27,28 @@ import MDSpinner from "react-md-spinner";
 class AdminLists extends Component {
   static propTypes = {
     whiteList: PropTypes.array.isRequired,
-    isLoading: PropTypes.bool.isRequired,
-    blackList: PropTypes.array.isRequired
+    blackList: PropTypes.array.isRequired,
+    isLoadingBlackList: PropTypes.bool.isRequired,
+    isLoadingWhiteList: PropTypes.bool.isRequired,
+    isRemoveProcessing: PropTypes.bool.isRequired,
+    selectedId: PropTypes.number.isRequired,
+    openBlackListModal: PropTypes.func.isRequired,
+    openWhiteListModal: PropTypes.func.isRequired,
+    removeFromBlackList: PropTypes.func.isRequired,
+    removeFromWhiteList: PropTypes.func.isRequired
   };
 
-  renderLoading() {
-    if (this.props.isLoading) {
+  onDelete = (isWhite, id) => {
+      if (isWhite) {
+          this.props.removeFromWhiteList(id);
+      }
+      else {
+          this.props.removeFromBlackList(id);
+      }
+  }
+
+  renderLoading(isLoading) {
+    if (isLoading) {
       return (
         <div className="text-center mt-2">
           <MDSpinner size={100} color="#e91e63" />
@@ -42,8 +57,11 @@ class AdminLists extends Component {
     }
   }
 
-  renderList() {
+  renderList(isWhite) {
+    let list = isWhite ? this.props.whiteList : this.props.blackList;
+
     return (
+        <div>
       <Table
         hover={true}
         responsive={true}
@@ -67,14 +85,22 @@ class AdminLists extends Component {
             <th />
           </tr>
         </thead>
-        <tbody>{this.props.blackList.map(user => this.renderUser(user))}</tbody>
+        <tbody>
+          {list.map(user => this.renderUser(isWhite, user))}
+        </tbody>
       </Table>
+      {!list.length ? this.renderNoList() : null}
+      </div>
     );
   }
 
-  renderUser(user) {
+  renderNoList() {
+    return <div className='empty-table'>No se encontraron usuarios dentro de la lista.</div>;
+  }
+
+  renderUser(isWhite, user) {
     return (
-      <tr key={`tr_${user.id_usuario}`}>
+      <tr key={`tr_${user.ID}`}>
         <td>
           <div className="form-check form-check-inline">
             <Input
@@ -85,18 +111,20 @@ class AdminLists extends Component {
             />
           </div>
         </td>
-        <td>{user.id_usuario}</td>
-        <td>Documento</td>
-        <td>{user.nombre + " " + user.apellidos}</td>
+        <td>{user.ID}</td>
+        <td>{user.DNI}</td>
+        <td>{user.Nombres}</td>
         <td className="icon-action">
-          <i
-            className="cui-circle-x font-2xl"
-            id="tip-action-1"
-            onClick={() => this.props.onDelete(user.id_usuario)}
-          />
-          <UncontrolledTooltip placement="top" target="tip-action-1">
-            Eliminar
-          </UncontrolledTooltip>
+          <span onClick={() => this.onDelete(isWhite, user.ID)}>
+          {this.props.isRemoveProcessing && this.props.selectedId === user.ID
+              ?
+              <MDSpinner size={15} className='mr-1' />
+              :
+              <i
+                className="cui-circle-x font-2xl"
+                id="tip-action-1"/>
+          }
+          </span>
         </td>
       </tr>
     );
@@ -115,21 +143,23 @@ class AdminLists extends Component {
                 <div className="custom-header">
                   <CardTitle className="text-muted">Lista Blanca </CardTitle>
                   <div className="card-header-actions">
-                    <Button color="primary" className="btn-square">
+                    <Button onClick={this.props.openWhiteListModal} color="primary" className="btn-square">
                       <i className="icon-plus" />&nbsp;Agregar
                     </Button>
                   </div>
                 </div>
-                {this.renderList(true)}
+                {this.renderLoading(this.props.isLoadingWhiteList)}
+                {!this.props.isLoading ? this.renderList(true) : null}
                 <div className="custom-header">
                   <CardTitle className="text-muted">Lista Negra </CardTitle>
                   <div className="card-header-actions">
-                    <Button color="primary" className="btn-square">
+                  <Button onClick={this.props.openBlackListModal} color="primary" className="btn-square">
                       <i className="icon-plus" />&nbsp;Agregar
                     </Button>
                   </div>
                 </div>
-                {this.renderList(false)}
+                {this.renderLoading(this.props.isLoadingBlackList)}
+                {!this.props.isLoading ? this.renderList(false) : null}
               </CardBody>
             </Card>
           </Col>

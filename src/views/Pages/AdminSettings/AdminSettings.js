@@ -22,111 +22,263 @@ import {
   Input,
   UncontrolledTooltip
 } from "reactstrap";
-import DefaultLayout from '../../../containers/DefaultLayout';
-import { AppSwitch } from '@coreui/react';
-import Rating from 'react-rating';
+import DefaultLayout from "../../../containers/DefaultLayout";
+import { isObjectEmpty } from "../../../utils/utils";
+import { AppSwitch } from "@coreui/react";
+import MDSpinner from "react-md-spinner";
+import Rating from "react-rating";
+import Slider from "react-rangeslider";
 
 class AdminSettings extends Component {
+  static propTypes = {
+    isServicesLoading: PropTypes.bool.isRequired,
+    isQuestionsLoading: PropTypes.bool.isRequired,
+    percentageValue: PropTypes.number,
+    questionsCount: PropTypes.number,
+    lockTime: PropTypes.number,
+    attemptsCount: PropTypes.number,
+    selectedService: PropTypes.string,
+    services: PropTypes.array.isRequired,
+    questions: PropTypes.object.isRequired,
+    onPercentageChange: PropTypes.func.isRequired,
+    onPercentageRevanchaChange: PropTypes.func.isRequired,
+    onRate: PropTypes.func.isRequired,
+    onChange: PropTypes.func.isRequired,
+    onServiceSelect: PropTypes.func.isRequired,
+    onSubmit: PropTypes.func.isRequired,
+    onCancel: PropTypes.func.isRequired
+  };
+
+  renderLoading() {
+    return (
+      <div className="text-center mt-2">
+        <MDSpinner size={100} color="#e91e63" />
+      </div>
+    );
+  }
+
+  renderServices() {
+    const services = service => (
+      <option key={`id_${service.id_servicio}`} value={service.id_servicio}>
+        {service.desc_servicio}
+      </option>
+    );
+
+    return this.props.services.map(service => services(service));
+  }
+
+  renderQuestions() {
+    const { questions } = this.props;
+
+    let renderable = [];
+
+    const questionsGenerator = (question, id) => (
+      <tr key={`id_${id}`}>
+        <td>
+          <span className="td-responsive">{question.descripcion}</span>
+        </td>
+        <td className="text-center">
+          <AppSwitch
+            className={"mx-1"}
+            variant={"pill"}
+            name="activa"
+            onChange={e => this.props.onChange(e, id)}
+            color={"primary"}
+            checked={question.activa}
+          />
+        </td>
+        <td className="text-center">
+          <AppSwitch
+            className={"mx-1"}
+            variant={"pill"}
+            name="revancha"
+            onChange={e => this.props.onChange(e, id)}
+            color={"primary"}
+            checked={question.revancha}
+          />
+        </td>
+        <td className="text-center">
+          <AppSwitch
+            className={"mx-1"}
+            name="aleatoria"
+            onChange={e => this.props.onChange(e, id)}
+            variant={"pill"}
+            color={"primary"}
+            checked={question.aleatoria}
+          />
+        </td>
+        <td className="text-center ">
+          <Rating
+            initialRating={question.ponderacion}
+            onChange={value => this.props.onRate(value, id)}
+            emptySymbol="fa fa-star-o fa-2x"
+            fullSymbol="fa fa-star fa-2x"
+          />
+        </td>
+      </tr>
+    );
+
+    for (let question in questions) {
+      renderable.push(questionsGenerator(questions[question], question));
+    }
+
+    return renderable;
+  }
+
+  renderContent() {
+    if (this.props.selectedService && !isObjectEmpty(this.props.questions)) {
+      return (
+        <CardBody className="text-dark">
+          <Row>
+            <Col xs="12" sm="12" lg="7">
+              <Table responsive={true} className="table-blank">
+                <thead className="thead-light">
+                  <tr>
+                    <th />
+                    <th className="text-center">Activa</th>
+                    <th className="text-center">Revancha</th>
+                    <th className="text-center">Aleatoria</th>
+                    <th className="text-center">Ponderacion</th>
+                  </tr>
+                </thead>
+                <tbody>{this.renderQuestions()}</tbody>
+              </Table>
+            </Col>
+            {this.renderInfo()}
+          </Row>
+          <Row className="mt-4">
+            <Col>
+              <p>Porcentaje de valoracion: {`${this.props.percentageValue}`}</p>
+              <Slider
+                tooltip={false}
+                value={this.props.percentageValue}
+                labels={this.props.percentageLabels}
+                onChange={this.props.onPercentageChange}
+              />
+            </Col>
+          </Row>
+          <Row className="mt-4">
+            <Col>
+              <p>
+                Porcentaje de revancha: {`${this.props.percentageRevancha}`}
+              </p>
+              <Slider
+                tooltip={false}
+                value={this.props.percentageRevancha}
+                labels={this.props.percentageLabels}
+                onChange={this.props.onPercentageRevanchaChange}
+              />
+            </Col>
+          </Row>
+        </CardBody>
+      );
+    } else {
+      return (
+        <div className="empty-content">
+          <Col>
+            <p className="ml-1 mr-1">
+              No existen preguntas en este servicio o no ha seleccionado un
+              servicio valido, Por favor seleccione un servicio.
+            </p>
+          </Col>
+        </div>
+      );
+    }
+  }
+
+  renderInfo() {
+    return (
+      <Col xs="12" sm="12" lg="5">
+        <Row className="pt-3 pb-3 pl-3 pr-3">
+          <Col xs="12" sm="6" lg="4" className="my-auto">
+            Cantidad de Preguntas a mostrar
+          </Col>
+          <Col xs="12" sm="6" lg="8">
+            <h1>
+              <Badge color="secondary">{`${this.props.questionsCount}`}</Badge>
+            </h1>
+          </Col>
+        </Row>
+        <Row className="pt-3 pb-3 pl-3 pr-3">
+          <Col xs="12" sm="6" lg="4" className="my-auto">
+            Tiempo de bloqueo
+          </Col>
+          <Col xs="12" sm="6" lg="8" className="d-flex">
+            <h1>
+              <Badge color="secondary">{`${this.props.lockTime}`}</Badge>
+            </h1>
+            <span className="ml-3 my-auto">En horas </span>
+          </Col>
+        </Row>
+        <Row className="pt-3 pb-3 pl-3 pr-3">
+          <Col xs="12" sm="6" lg="4" className="my-auto">
+            Cantidad de intentos
+          </Col>
+          <Col xs="12" sm="6" lg="8">
+            <h1>
+              <Badge color="secondary">{`${this.props.attemptsCount}`}</Badge>
+            </h1>
+          </Col>
+        </Row>
+      </Col>
+    );
+  }
+
   render() {
     return (
-        <DefaultLayout>
-      <Row>
-        <Col>
-          <Card>
-            <CardHeader className="custom-card-header">
-              <div className="border-bottom">
-                <Row>
-                  <Col xs="12" sm="8" lg="9">
-                    <CardTitle className="mb-0">Opciones </CardTitle>
-                  </Col>
-                  <Col xs="12" sm="4" lg="3">
-                    <Input
-                      type="select"
-                      name="selectSm"
-                      id="SelectLm"
-                      bsSize="sm"
-                    >
-                      <option value="0">Service</option>
-                      <option value="1">Option #1</option>
-                      <option value="2">Option #2</option>
-                      <option value="3">Option #3</option>
-                      <option value="4">Option #4</option>
-                      <option value="5">Option #5</option>
-                    </Input>
-                  </Col>
-                </Row>
-              </div>
-            </CardHeader>
-            <CardBody className="text-dark">
-              <Row>
-                <Col xs="12" sm="8" lg="6">
-                  <Table responsive={true} size="sm" className="table-blank">
-                    <thead className="thead-light">
-                      <tr>
-                        <th />
-                        <th className='text-center'>Activa</th>
-                        <th className='text-center'>Aleatoria</th>
-                        <th className='text-center'>Ponderacion</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>
-                          <span>Preguntas</span>
-                        </td>
-                        <td className='text-center'>
-                            <AppSwitch className={'mx-1'} variant={'pill'} color={'primary'} checked />
-                        </td>
-                        <td className='text-center'>
-                            <AppSwitch className={'mx-1'} variant={'pill'} color={'primary'} checked />
-                        </td>
-                        <td className='text-center'>
-                            <Rating
-                              emptySymbol="fa fa-star-o fa-2x"
-                              fullSymbol="fa fa-star fa-2x"
-                            />
-                        </td>
-                      </tr>
-                    </tbody>
-                  </Table>
-                </Col>
-                <Col xs="12" sm="4" lg="6">
-                  <Row className='pt-3 pb-3 pl-3 pr-3'>
-                    <Col xs="12" sm="6" lg="3">
-                      Cantidad de Preguntas a mostrar
+      <DefaultLayout>
+        <Row>
+          <Col>
+            <Card>
+              <CardHeader className="custom-card-header">
+                <div className="border-bottom">
+                  <Row>
+                    <Col xs="12" sm="8" lg="9">
+                      <CardTitle className="mb-0">Opciones </CardTitle>
                     </Col>
-                    <Col xs="12" sm="6" lg="9">
-                      <h1>
-                        <Badge color="secondary">11</Badge>
-                      </h1>
+                    <Col xs="12" sm="4" lg="3">
+                      <Input
+                        type="select"
+                        name="selectedService"
+                        onChange={this.props.onServiceSelect}
+                        id="servicio"
+                        bsSize="sm"
+                      >
+                        <option value="0" selected={true} disabled={true}>
+                          Service
+                        </option>
+                        {this.renderServices()}
+                      </Input>
                     </Col>
                   </Row>
-                  <Row className='pt-3 pb-3 pl-3 pr-3'>
-                    <Col xs="12" sm="6" lg="3">
-                      Tiempo de bloqueo
-                    </Col>
-                    <Col xs="12" sm="6" lg="9">
-                      <h1>
-                        <Badge color="secondary">11</Badge>
-                      </h1>
-                    </Col>
-                  </Row>
-                  <Row className='pt-3 pb-3 pl-3 pr-3'>
-                    <Col xs="12" sm="6" lg="3">
-                      Cantidad de intentos
-                    </Col>
-                    <Col xs="12" sm="6" lg="9">
-                      <h1>
-                        <Badge color="secondary">11</Badge>
-                      </h1>
-                    </Col>
-                  </Row>
-                </Col>
-              </Row>
-            </CardBody>
-          </Card>
-        </Col>
-      </Row>
+                </div>
+              </CardHeader>
+              {this.props.isQuestionsLoading
+                ? this.renderLoading()
+                : this.renderContent()}
+              {this.props.selectedService &&
+              !this.props.isQuestionsLoading &&
+              !isObjectEmpty(this.props.questions) ? (
+                <CardFooter className="text-right">
+                  <Button
+                    className="btn-square mr-1"
+                    color="primary"
+                    onClick={this.props.onSubmit}
+                  >
+                    Save
+                  </Button>
+                  <Button
+                    className="btn-square"
+                    color="danger"
+                    onClick={this.props.onCancel}
+                  >
+                    Cancel
+                  </Button>
+                </CardFooter>
+              ) : null}
+            </Card>
+          </Col>
+        </Row>
       </DefaultLayout>
     );
   }
