@@ -149,7 +149,7 @@ class AdminLists extends Component {
                   </div>
                 </div>
                 {this.renderLoading(this.props.isLoadingWhiteList)}
-                {!this.props.isLoading ? this.renderList(true) : null}
+                {!this.props.isLoadingWhiteList ? this.renderList(true) : null}
                 <div className="custom-header">
                   <CardTitle className="text-muted">Lista Negra </CardTitle>
                   <div className="card-header-actions">
@@ -159,7 +159,7 @@ class AdminLists extends Component {
                   </div>
                 </div>
                 {this.renderLoading(this.props.isLoadingBlackList)}
-                {!this.props.isLoading ? this.renderList(false) : null}
+                {!this.props.isLoadingBlackList ? this.renderList(false) : null}
               </CardBody>
             </Card>
           </Col>

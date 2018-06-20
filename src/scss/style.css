@@ -10038,6 +10038,8 @@ body {
   border: none;
   width: 80px;
   max-width: 100%; }
+  .special-input:focus {
+    outline: none; }
 
 html body .app.flex-row.align-items-center {
   height: 100vh; }

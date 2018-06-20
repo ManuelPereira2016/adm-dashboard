@@ -120,6 +120,10 @@ class AdminListsContainer extends Component {
     const value = parseInt(target.value, 10);
     const name = target.name;
 
+    if (value <= 0) {
+        return false;
+    }
+
     this.setState({
         [name]: value
     });

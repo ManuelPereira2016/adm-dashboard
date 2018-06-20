@@ -17,21 +17,28 @@ class LoginContainer extends Component {
     isAdmin: PropTypes.bool.isRequired
   };
 
-  componentWillMount() {
+  constructor(props) {
+      super(props);
+
       const authToken = getLoginToken();
 
-    if (authToken) {
-        if (this.props.isAuthed && !this.props.isAdmin) {
-            this.props.dispatch(push('/user/form'));
-        }
-    }
+      if (authToken) {
+          if (props.isAuthed && !props.isAdmin) {
+              props.dispatch(push('/user/form'));
+          }
+          else {
+              props.dispatch(push('/admin/dashboard'));
+          }
+      }
   }
 
   async componentDidUpdate(prevProps) {
-      if (!prevProps.isAuthed && this.props.isAuthed) {
+      if (this.props.isAuthed) {
           const data = await getAuthData();
 
           await this.props.dispatch(isAuthed(data));
+
+          console.log(this.props.isAdmin);
 
           if (this.props.isAdmin) {
               this.props.dispatch(push('/admin/dashboard'));

@@ -41,8 +41,8 @@ class CreateUser extends Component {
   renderForm() {
     return (
       <form ref={this.props.formRef}>
-        <h1>Dar de alta</h1>
-        <p className="text-muted">Crear nuevo usuario</p>
+        <h1>{!this.props.user ? "Dar de alta" : "Modificar usuario"}</h1>
+        <p className="text-muted">{!this.props.user ? "Crear nuevo usuario" : ""}</p>
         <InputGroup className="mb-3">
           <InputGroupAddon addonType="prepend">
             <InputGroupText>
