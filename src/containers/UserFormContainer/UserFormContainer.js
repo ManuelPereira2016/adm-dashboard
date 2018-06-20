@@ -5,6 +5,7 @@ import { removeLoginToken, getLoginToken } from "../../utils/utils";
 import { setQuestions } from "../../api/question";
 import { getServices } from "../../api/service";
 import { getUserData } from "../../redux/modules/selectors/user";
+import { getIsAdminFlag } from "../../redux/modules/selectors/authentication";
 import { connect } from "react-redux";
 import { push } from 'connected-react-router';
 import to from "await-to-js";
@@ -30,6 +31,11 @@ class UserFormContainer extends Component {
 
       if (!authToken) {
           props.dispatch(push('/login'));
+      }
+      else {
+          if (this.props.isAdmin) {
+              props.dispatch(push('/admin/dashboard'));
+          }
       }
   }
 
@@ -88,7 +94,8 @@ class UserFormContainer extends Component {
 
 function mapStateToProps(state) {
     return {
-        userData: getUserData(state)
+        userData: getUserData(state),
+        isAdmin: getIsAdminFlag(state)
     };
 }
 

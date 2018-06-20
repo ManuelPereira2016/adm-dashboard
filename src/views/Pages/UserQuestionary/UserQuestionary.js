@@ -35,9 +35,9 @@ class UserQuestionary extends Component {
   };
 
   renderQuestions() {
-      const makeAnswer = (respuesta) => (
+      const makeAnswer = (respuesta, id) => (
           <div>
-            <Radio value={respuesta} className="form-check-input" />
+            <Radio value={id} className="form-check-input" />
             <Label>{respuesta}</Label>
           </div>
       );
@@ -48,10 +48,10 @@ class UserQuestionary extends Component {
               {pregunta.pregunta}
             </Label>
             <RadioGroup name={`pregunta_${pregunta.ID}`} className="pl-4" onChange={(value) => this.props.onChange(value, pregunta.ID)}>
-                {makeAnswer(pregunta["0"])}
-                {makeAnswer(pregunta["1"])}
-                {makeAnswer(pregunta["2"])}
-                {makeAnswer(pregunta["3"])}
+                {makeAnswer(pregunta["0"], 0)}
+                {makeAnswer(pregunta["1"], 1)}
+                {makeAnswer(pregunta["2"], 2)}
+                {makeAnswer(pregunta["3"], 3)}
             </RadioGroup>
           </FormGroup>
       );
