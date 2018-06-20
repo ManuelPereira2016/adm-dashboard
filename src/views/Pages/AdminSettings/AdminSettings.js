@@ -18,6 +18,7 @@ import {
   DropdownToggle,
   Progress,
   Row,
+  UncontrolledAlert,
   Table,
   Input,
   UncontrolledTooltip
@@ -38,12 +39,14 @@ class AdminSettings extends Component {
     lockTime: PropTypes.number,
     attemptsCount: PropTypes.number,
     selectedService: PropTypes.string,
+    message: PropTypes.string,
     services: PropTypes.array.isRequired,
     questions: PropTypes.object.isRequired,
     onPercentageChange: PropTypes.func.isRequired,
     onPercentageRevanchaChange: PropTypes.func.isRequired,
     onRate: PropTypes.func.isRequired,
     onChange: PropTypes.func.isRequired,
+    onGeneralChange: PropTypes.func.isRequired,
     onServiceSelect: PropTypes.func.isRequired,
     onSubmit: PropTypes.func.isRequired,
     onCancel: PropTypes.func.isRequired
@@ -195,7 +198,15 @@ class AdminSettings extends Component {
           </Col>
           <Col xs="12" sm="6" lg="8">
             <h1>
-              <Badge color="secondary">{`${this.props.questionsCount}`}</Badge>
+              <Badge color="secondary">
+                <input
+                  type="number"
+                  className="special-input"
+                  value={this.props.questionsCount}
+                  name="questionsCount"
+                  onChange={this.props.onGeneralChange}
+                />
+              </Badge>
             </h1>
           </Col>
         </Row>
@@ -205,7 +216,15 @@ class AdminSettings extends Component {
           </Col>
           <Col xs="12" sm="6" lg="8" className="d-flex">
             <h1>
-              <Badge color="secondary">{`${this.props.lockTime}`}</Badge>
+              <Badge color="secondary">
+                <input
+                  type="number"
+                  className="special-input"
+                  value={this.props.lockTime}
+                  name="lockTime"
+                  onChange={this.props.onGeneralChange}
+                />
+              </Badge>
             </h1>
             <span className="ml-3 my-auto">En horas </span>
           </Col>
@@ -216,7 +235,15 @@ class AdminSettings extends Component {
           </Col>
           <Col xs="12" sm="6" lg="8">
             <h1>
-              <Badge color="secondary">{`${this.props.attemptsCount}`}</Badge>
+              <Badge color="secondary">
+                <input
+                  type="number"
+                  className="special-input"
+                  value={this.props.attemptsCount}
+                  name="attemptsCount"
+                  onChange={this.props.onGeneralChange}
+                />
+              </Badge>
             </h1>
           </Col>
         </Row>
@@ -256,20 +283,34 @@ class AdminSettings extends Component {
               {this.props.isQuestionsLoading
                 ? this.renderLoading()
                 : this.renderContent()}
+              {this.props.message ? (
+                <UncontrolledAlert color="info">
+                  {this.props.message}
+                </UncontrolledAlert>
+              ) : null}
               {this.props.selectedService &&
               !this.props.isQuestionsLoading &&
               !isObjectEmpty(this.props.questions) ? (
                 <CardFooter className="text-right">
                   <Button
                     className="btn-square mr-1"
+                    disabled={this.props.isProcessing}
                     color="primary"
                     onClick={this.props.onSubmit}
                   >
+                    {this.props.isProcessing ? (
+                      <MDSpinner
+                        size={15}
+                        singleColor="#fff"
+                        className="mr-1"
+                      />
+                    ) : null}
                     Save
                   </Button>
                   <Button
                     className="btn-square"
                     color="danger"
+                    disabled={this.props.isProcessing}
                     onClick={this.props.onCancel}
                   >
                     Cancel

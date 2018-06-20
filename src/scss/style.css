@@ -10033,5 +10033,11 @@ body {
     .td-responsive {
       width: 70px; } }
 
+.special-input {
+  background: transparent;
+  border: none;
+  width: 80px;
+  max-width: 100%; }
+
 html body .app.flex-row.align-items-center {
   height: 100vh; }

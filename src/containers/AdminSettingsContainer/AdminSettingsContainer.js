@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import to from "await-to-js";
 import AdminSettings from "../../views/Pages/AdminSettings/AdminSettings";
 import { getServices } from "../../api/service";
-import { getConfig } from "../../api/user";
+import { getConfig, saveConfig } from "../../api/user";
 
 class AdminListsContainer extends Component {
   static propTypes = {
@@ -13,12 +13,14 @@ class AdminListsContainer extends Component {
   state = {
     isServicesLoading: true,
     isQuestionsLoading: false,
+    isProcessing: false,
     selectedService: null,
     percentageValue: 0,
     percentageRevancha: 0,
     questionsCount: 0,
     lockTime: 0,
     attemptsCount: 0,
+    message: '',
     services: [],
     questions: {}
   };
@@ -58,43 +60,17 @@ class AdminListsContainer extends Component {
 
     if (err) return console.error(err);
 
-    const sample = [
-      {
-        id_pregunta: 1,
-        desc_pregunta: "Soy una pregunta de prueba?",
-        activa: true,
-        aleatoria: false,
-        revancha: false,
-        ponderacion: 2
-      },
-      {
-        id_pregunta: 2,
-        desc_pregunta: "Soy una pregunta de prueba?",
-        activa: true,
-        aleatoria: false,
-        revancha: false,
-        ponderacion: 2
-      },
-      {
-        id_pregunta: 3,
-        desc_pregunta: "Soy una pregunta de prueba?",
-        activa: true,
-        aleatoria: false,
-        revancha: false,
-        ponderacion: 2
-      }
-    ];
-
     if (!data.error) {
       let questions = {};
 
-      if (sample.length) {
-        sample.forEach(question => {
+      if (data.pregunta.length) {
+        data.pregunta.forEach(question => {
           questions = {
             ...questions,
             [question.id_pregunta]: {
               descripcion: question.desc_pregunta,
               activa: question.activa,
+              revancha: question.revancha,
               aleatoria: question.aleatoria,
               ponderacion: question.ponderacion
             }
@@ -139,6 +115,16 @@ class AdminListsContainer extends Component {
     });
   };
 
+  onGeneralChange = (event, id) => {
+    const target = event.target;
+    const value = parseInt(target.value, 10);
+    const name = target.name;
+
+    this.setState({
+        [name]: value
+    });
+  };
+
   onRate = (value, id) => {
     const { questions } = this.state;
 
@@ -171,15 +157,30 @@ class AdminListsContainer extends Component {
     });
   };
 
-  handleSubmit = () => {
+  handleSubmit = async () => {
       let data = {
           id_servicio: this.state.selectedService,
           por_validacion: this.state.percentageValue,
           por_revancha: this.state.percentageRevancha,
+          cant_preg: this.state.questionsCount,
+          cant_intentos: this.state.attemptsCount,
+          t_desbloqueo: this.state.lockTime,
           questions: this.state.questions
       };
 
-      console.log(data);
+      this.setState({
+          message: '',
+          isProcessing: true
+      });
+
+      const [err, response] = await to(saveConfig(data));
+
+      if (err) return console.error(err);
+
+      this.setState({
+          message: response.data,
+          isProcessing: false
+      });
   };
 
   render() {
@@ -193,14 +194,17 @@ class AdminListsContainer extends Component {
         selectedService={this.state.selectedService}
         percentageValue={this.state.percentageValue}
         percentageRevancha={this.state.percentageRevancha}
+        message={this.state.message}
         questionsCount={this.state.questionsCount}
         lockTime={this.state.lockTime}
         attemptsCount={this.state.attemptsCount}
+        isProcessing={this.state.isProcessing}
         onPercentageChange={this.onPercentageChange}
         onPercentageRevanchaChange={this.onPercentageRevanchaChange}
         onServiceSelect={this.onServiceSelect}
         onRate={this.onRate}
         onChange={this.onChange}
+        onGeneralChange={this.onGeneralChange}
         onCancel={this.onCancel}
         onSubmit={this.handleSubmit}
       />

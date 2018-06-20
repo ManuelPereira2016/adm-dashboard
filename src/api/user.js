@@ -33,3 +33,11 @@ export function getUsers() {
 export function getConfig(servicio) {
     return doApiRequest('users/config', { servicio }, 'POST');
 }
+
+/**
+ * Save config
+ * @returns {Promise}
+ */
+export function saveConfig(data) {
+    return doApiRequest('users/uconfig', data, 'POST');
+}
