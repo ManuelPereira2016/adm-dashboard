@@ -22,9 +22,7 @@ class CreateUserContainer extends Component {
     super(props);
 
     this.formRef = React.createRef();
-  }
 
-  componentWillMount() {
     this.user = null;
     this.services = [];
 

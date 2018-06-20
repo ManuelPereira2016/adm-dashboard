@@ -1,9 +1,9 @@
 import doApiRequest from './doApiRequest';
 
 /**
- * Get questions
+ * Set questions for an user providing dni, sexo and servicio.
  * @returns {Promise}
  */
-export function getQuestions(id) {
-    return doApiRequest('users/question');
+export function setQuestions(data) {
+    return doApiRequest('questions', data, "POST");
 }

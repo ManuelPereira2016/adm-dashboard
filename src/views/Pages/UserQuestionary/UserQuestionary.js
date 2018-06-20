@@ -15,24 +15,58 @@ import {
   Form,
   FormText,
   InputGroupAddon,
+  UncontrolledAlert,
   InputGroupText,
   Row
 } from "reactstrap";
+import { AppHeader } from "@coreui/react";
+import MinimalHeader from "../../../containers/DefaultLayout/MinimalHeader";
 import { RadioGroup, Radio } from "react-radio-group";
+import MDSpinner from "react-md-spinner";
 
 class UserQuestionary extends Component {
   static propTypes = {
-    history: PropTypes.object.isRequired
+    onLogout: PropTypes.func.isRequired,
+    onChange: PropTypes.func.isRequired,
+    onSubmit: PropTypes.func.isRequired,
+    form: PropTypes.array.isRequired,
+    message: PropTypes.string,
+    isProcessing: PropTypes.bool.isRequired
   };
 
-  onCancel = () => {
-    this.props.history.push("/admin/users");
-  };
+  renderQuestions() {
+      const makeAnswer = (respuesta) => (
+          <div>
+            <Radio value={respuesta} className="form-check-input" />
+            <Label>{respuesta}</Label>
+          </div>
+      );
+
+      const makeQuestion = (pregunta) => (
+          <FormGroup key={`id_${pregunta.ID}`}>
+            <Label>
+              {pregunta.pregunta}
+            </Label>
+            <RadioGroup name={`pregunta_${pregunta.ID}`} className="pl-4" onChange={(value) => this.props.onChange(value, pregunta.ID)}>
+                {makeAnswer(pregunta["0"])}
+                {makeAnswer(pregunta["1"])}
+                {makeAnswer(pregunta["2"])}
+                {makeAnswer(pregunta["3"])}
+            </RadioGroup>
+          </FormGroup>
+      );
+
+      return this.props.form.map(field => makeQuestion(field));
+  }
 
   render() {
     return (
-      <div className="app flex-row align-items-center">
-        <Container>
+        <div className="app ">
+          <AppHeader >
+            <MinimalHeader onLogout={this.props.onLogout} />
+          </AppHeader>
+          <div className="app-body flex-row align-items-center">
+        <Container className="mt-5">
           <Row className="justify-content-center">
             <Col md="6">
               <Card>
@@ -42,87 +76,28 @@ class UserQuestionary extends Component {
                   </strong>
                 </div>
                 <CardBody>
-                  <Form action="" method="post">
-                    <FormGroup>
-                      <Label>
-                        Vive o vivio en alguna de estas direcciones:
-                      </Label>
-                      <RadioGroup name="fruit" className="pl-4">
-                        <div>
-                          <Radio value="text" className="form-check-input" />
-                          <Label>Tandill, 1944 Y Dr Vivian</Label>
-                        </div>
-                        <div>
-                          <Radio value="text" className="form-check-input" />
-                          <Label>Tandill, 1944 Y Dr Vivian</Label>
-                        </div>
-                        <div>
-                          <Radio value="text" className="form-check-input" />
-                          <Label>Tandill, 1944 Y Dr Vivian</Label>
-                        </div>
-                        <div>
-                          <Radio value="text" className="form-check-input" />
-                          <Label>Tandill, 1944 Y Dr Vivian</Label>
-                        </div>
-                      </RadioGroup>
-                    </FormGroup>
-                    <FormGroup>
-                      <Label>
-                        Vive o vivio en alguna de estas direcciones:
-                      </Label>
-                      <RadioGroup name="fruit" className="pl-4">
-                        <div>
-                          <Radio value="text" className="form-check-input" />
-                          <Label>Tandill, 1944 Y Dr Vivian</Label>
-                        </div>
-                        <div>
-                          <Radio value="text" className="form-check-input" />
-                          <Label>Tandill, 1944 Y Dr Vivian</Label>
-                        </div>
-                        <div>
-                          <Radio value="text" className="form-check-input" />
-                          <Label>Tandill, 1944 Y Dr Vivian</Label>
-                        </div>
-                        <div>
-                          <Radio value="text" className="form-check-input" />
-                          <Label>Tandill, 1944 Y Dr Vivian</Label>
-                        </div>
-                      </RadioGroup>
-                    </FormGroup>
-                    <FormGroup>
-                      <Label>
-                        Vive o vivio en alguna de estas direcciones:
-                      </Label>
-                      <RadioGroup name="fruit" className="pl-4">
-                        <div>
-                          <Radio value="text" className="form-check-input" />
-                          <Label>Tandill, 1944 Y Dr Vivian</Label>
-                        </div>
-                        <div>
-                          <Radio value="text" className="form-check-input" />
-                          <Label>Tandill, 1944 Y Dr Vivian</Label>
-                        </div>
-                        <div>
-                          <Radio value="text" className="form-check-input" />
-                          <Label>Tandill, 1944 Y Dr Vivian</Label>
-                        </div>
-                        <div>
-                          <Radio value="text" className="form-check-input" />
-                          <Label>Tandill, 1944 Y Dr Vivian</Label>
-                        </div>
-                      </RadioGroup>
-                    </FormGroup>
-                  </Form>
+                    {this.renderQuestions()}
+                    {this.props.message ? (
+                        <UncontrolledAlert color="info">
+                        {this.props.message}
+                        </UncontrolledAlert>
+                    ) : null}
                 </CardBody>
                 <div className="pb-3 pr-3 pl-3 pt-3 text-center">
-                  <Button type="submit" size="sm" color="primary">
-                    Comprobar el formulario
+                  <Button onClick={this.props.onSubmit} disabled={this.props.isProcessing} color="primary" className="btn-square">
+                    {this.props.isProcessing
+                        ?
+                        <span><MDSpinner size={15} singleColor="#fff" className="mr-1" />Realizando la validacion</span>
+                        :
+                        <span>Comprobar el formulario</span>
+                    }
                   </Button>
                 </div>
               </Card>
             </Col>
           </Row>
         </Container>
+        </div>
       </div>
     );
   }

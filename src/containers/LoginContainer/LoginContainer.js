@@ -38,9 +38,7 @@ class LoginContainer extends Component {
 
           await this.props.dispatch(isAuthed(data));
 
-          console.log(this.props.isAdmin);
-
-          if (this.props.isAdmin) {
+          if (data.id_servicio === 9) {
               this.props.dispatch(push('/admin/dashboard'));
           }
           else {

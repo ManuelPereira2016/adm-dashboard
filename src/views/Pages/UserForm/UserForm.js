@@ -16,19 +16,26 @@ import {
   FormText,
   InputGroupAddon,
   InputGroupText,
-  Row
+  Row,
+  UncontrolledAlert,
 } from "reactstrap";
 import { AppHeader } from "@coreui/react";
 import MinimalHeader from "../../../containers/DefaultLayout/MinimalHeader";
+import MDSpinner from "react-md-spinner";
 
 class UserForm extends Component {
   static propTypes = {
-    onLogout: PropTypes.func.isRequired
+    onLogout: PropTypes.func.isRequired,
+    message: PropTypes.string,
+    isProcessing: PropTypes.bool.isRequired
   };
 
-  onCancel = () => {
-    this.props.history.push("/admin/users");
-  };
+  onSubmit = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      this.props.onSubmit(e.target)
+  }
 
   render() {
     return (
@@ -41,45 +48,54 @@ class UserForm extends Component {
             <Row className="justify-content-center">
               <Col md="6">
                 <Card>
+                <Form onSubmit={this.onSubmit}>
                   <div className="pb-3 pt-3 pl-3 pr-3 text-center">
                     <strong className="border-bottom pb-3 lead font-weight-bold">
                       Ingrese sus datos
                     </strong>
                   </div>
                   <CardBody>
-                    <Form action="" method="post">
                       <FormGroup>
                         <Label htmlFor="dni">DNI</Label>
                         <Input
                           type="text"
                           id="dni"
+                          required={true}
                           name="dni"
                           placeholder="Introduce tu DNI.."
                         />
                         <FormText className="help-block">
-                          Por favor introduce tu DNI
+                          Ingrese su dni o cuil
                         </FormText>
                       </FormGroup>
                       <FormGroup>
-                        <Label htmlFor="gender">Sexo</Label>
+                        <Label htmlFor="sexo">Sexo</Label>
                         <Input
                           type="select"
-                          name="gender"
-                          id="gender"
-                          bsSize="sm"
+                          name="sexo"
+                          required={true}
+                          id="sexo"
                         >
-                          <option value="0">Sexo</option>
+                          <option value="0" selected={true} disabled={true}>Sexo</option>
                           <option value="M">M</option>
                           <option value="F">F</option>
                         </Input>
                       </FormGroup>
-                    </Form>
+                      {this.props.message ? (
+                        <UncontrolledAlert color="info">
+                          {this.props.message}
+                        </UncontrolledAlert>
+                      ) : null}
                   </CardBody>
                   <div className="pb-3 pr-3 pl-3 pt-3 text-center">
                     <Button type="submit" size="sm" color="primary">
-                      Ir a validacion
+                    {this.props.isProcessing ? (
+                      <MDSpinner size={15} singleColor="#fff" className="mr-1" />
+                    ) : null}
+                      IR A VALIDACION
                     </Button>
                   </div>
+                  </Form>
                 </Card>
               </Col>
             </Row>
