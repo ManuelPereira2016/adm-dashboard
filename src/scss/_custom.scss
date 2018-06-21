@@ -145,3 +145,23 @@
     outline: none;
     }
 }
+
+.main-container {
+    height: 350px;
+    margin-bottom: 20px;
+
+    .card {
+        overflow-y: auto;
+        margin-bottom: 0;
+        max-height: 100%;
+    }
+
+    .container-no-overflow {
+        overflow: hidden;
+    }
+}
+
+.scrolling-table {
+    max-height: 300px;
+    overflow-y: auto;
+}

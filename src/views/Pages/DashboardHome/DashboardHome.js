@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import { Bar, Line, Doughnut } from "react-chartjs-2";
 import {
   Card,
@@ -10,11 +11,12 @@ import {
   Row,
   Table
 } from "reactstrap";
-import DefaultLayout from '../../../containers/DefaultLayout';
+import DefaultLayout from "../../../containers/DefaultLayout";
 import Widget02 from "../../Widgets/Widget02";
 import Widget03 from "../../Widgets/Widget03";
 import { CustomTooltips } from "@coreui/coreui-plugin-chartjs-custom-tooltips";
 import { getStyle, hexToRgba } from "@coreui/coreui/dist/js/coreui-utilities";
+import moment from "moment";
 
 const brandPrimary = getStyle("--primary");
 const brandSuccess = getStyle("--success");
@@ -23,25 +25,14 @@ const brandWarning = getStyle("--warning");
 const brandDanger = getStyle("--danger");
 
 const doughnut = {
-  labels: [
-    'Web',
-    'USSD',
-    'IVR',
-  ],
+  labels: ["Web", "USSD", "IVR"],
   datasets: [
     {
       data: [300, 50, 100],
-      backgroundColor: [
-        '#FF6384',
-        '#36A2EB',
-        '#FFCE56',
-      ],
-      hoverBackgroundColor: [
-        '#FF6384',
-        '#36A2EB',
-        '#FFCE56',
-      ],
-    }],
+      backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"],
+      hoverBackgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"]
+    }
+  ]
 };
 
 const bar = {
@@ -511,6 +502,14 @@ const mainChartOpts = {
 };
 
 class DashboardHome extends Component {
+  static propTypes = {
+    total: PropTypes.number.isRequired,
+    aprobado: PropTypes.number.isRequired,
+    desaprobado: PropTypes.number.isRequired,
+    costo: PropTypes.number.isRequired,
+    ultimos: PropTypes.array.isRequired
+  };
+
   constructor(props) {
     super(props);
 
@@ -521,6 +520,58 @@ class DashboardHome extends Component {
       dropdownOpen: false,
       radioSelected: 2
     };
+  }
+
+  renderRows() {
+      const validaciones = (validacion) => (
+          <tr key={`id_${validacion.fecha}`}>
+            <td className="text-center">{validacion.dni}</td>
+            <td className="text-center">{validacion.sexo}</td>
+            <td className="text-center">{moment(validacion.fecha).format("DD-MM-YYYY HH:ss")}</td>
+            <td className="text-center">{validacion.porcentaje}</td>
+          </tr>
+      );
+
+      return this.props.ultimos.map(validacion => validaciones(validacion));
+  }
+
+  renderTable() {
+    return (
+      <Card>
+        <CardHeader className="text-white bg-primary">
+          <CardTitle className="mb-0">Validaciones recientes</CardTitle>
+        </CardHeader>
+        <CardBody className="text-dark">
+          <Table
+            hover={true}
+            responsive={true}
+            className="table-outline mb-0 d-none d-sm-table"
+          >
+            <thead className="thead-light">
+              <tr>
+                <th className="text-center">DNI</th>
+                <th className="text-center">Sexo</th>
+                <th className="text-center">Fecha</th>
+                <th className="text-center">%</th>
+              </tr>
+            </thead>
+            <tbody>
+                {this.renderRows()}
+            </tbody>
+          </Table>
+          {!this.props.ultimos.length
+              ?
+              this.renderNoList()
+              :
+              null
+          }
+        </CardBody>
+      </Card>
+    );
+  }
+
+  renderNoList() {
+    return <div className='empty-table'>No se encontraron validaciones recientes.</div>;
   }
 
   toggle() {
@@ -537,143 +588,114 @@ class DashboardHome extends Component {
 
   render() {
     return (
-        <DefaultLayout>
-      <div className="animated fadeIn">
-        <Row>
-          <Col xs="12" sm="6" lg="3">
-            <Widget02
-              header="Cantidad de Request"
-              mainText="4691"
-              icon="fa fa-cogs"
-              color="primary"
-              variant="1"
-            />
-          </Col>
-          <Col xs="12" sm="6" lg="3">
-            <Widget02
-              header="Aprobados"
-              mainText="4231"
-              icon="fa fa-laptop"
-              color="info"
-              variant="1"
-            />
-          </Col>
-          <Col xs="12" sm="6" lg="3">
-            <Widget02
-              header="Erroneos"
-              mainText="460"
-              icon="fa fa-moon-o"
-              color="danger"
-              variant="1"
-            />
-          </Col>
-          <Col xs="12" sm="6" lg="3">
-            <Widget02
-              header="Gasto Mensual"
-              mainText="248U$D"
-              icon="fa fa-bell"
-              color="warning"
-              variant="1"
-            />
-          </Col>
-        </Row>
-        <Row>
-          <Col xs="12" sm="12" lg="6">
-            <Card className="bg-indigo">
-              <CardHeader className="text-white">
-                <CardTitle className="mb-0">Mes Actual</CardTitle>
-              </CardHeader>
-              <CardBody className="text-dark">
-                <div className="chart-wrapper" style={{ height: 300 + "px" }}>
-                  <Line data={mainChart} options={mainChartOpts} height={300} />
-                </div>
-                <Row className="text-center">
-                  <Col sm={12} md className="legend-colors">
-                    <div className="legend">
-                      <i className="fa fa-square blue" />
-                      <strong>ap</strong>
-                    </div>
-                    <div className="legend">
-                      <i className="fa fa-square red" />
-                      <strong>err</strong>
-                    </div>
-                  </Col>
-                </Row>
-              </CardBody>
-            </Card>
-          </Col>
+      <DefaultLayout>
+        <div className="animated fadeIn">
+          <Row>
+            <Col xs="12" sm="6" lg="3">
+              <Widget02
+                header="Cantidad de Request"
+                mainText={`${this.props.total}`}
+                icon="fa fa-cogs"
+                color="primary"
+                variant="1"
+              />
+            </Col>
+            <Col xs="12" sm="6" lg="3">
+              <Widget02
+                header="Aprobados"
+                mainText={`${this.props.aprobado}`}
+                icon="fa fa-laptop"
+                color="info"
+                variant="1"
+              />
+            </Col>
+            <Col xs="12" sm="6" lg="3">
+              <Widget02
+                header="Erroneos"
+                mainText={`${this.props.desaprobado}`}
+                icon="fa fa-moon-o"
+                color="danger"
+                variant="1"
+              />
+            </Col>
+            <Col xs="12" sm="6" lg="3">
+              <Widget02
+                header="Gasto Mensual"
+                mainText={`${this.props.costo}`}
+                icon="fa fa-bell"
+                color="warning"
+                variant="1"
+              />
+            </Col>
+          </Row>
+          <Row>
+            <Col xs="12" sm="12" lg="6">
+              <Card className="bg-indigo">
+                <CardHeader className="text-white">
+                  <CardTitle className="mb-0">Mes Actual</CardTitle>
+                </CardHeader>
+                <CardBody className="text-dark">
+                  <div className="chart-wrapper" style={{ height: 300 + "px" }}>
+                    <Line
+                      data={mainChart}
+                      options={mainChartOpts}
+                      height={300}
+                    />
+                  </div>
+                  <Row className="text-center">
+                    <Col sm={12} md className="legend-colors">
+                      <div className="legend">
+                        <i className="fa fa-square blue" />
+                        <strong>ap</strong>
+                      </div>
+                      <div className="legend">
+                        <i className="fa fa-square red" />
+                        <strong>err</strong>
+                      </div>
+                    </Col>
+                  </Row>
+                </CardBody>
+              </Card>
+            </Col>
 
-          <Col xs="12" sm="12" lg="6">
-            <Card className="bg-orange">
-              <CardHeader className="text-white">
-                <CardTitle className="mb-0">Verificaciones mensuales</CardTitle>
-              </CardHeader>
-              <CardBody className="text-dark">
-                <div className="chart-wrapper" style={{ height: 300 + "px" }}>
-                  <Bar data={bar} options={barOptions} />
-                </div>
-                <Row className="text-center">
-                  <Col sm={12} md className="dummy-space" />
-                </Row>
-              </CardBody>
-            </Card>
-          </Col>
-        </Row>
+            <Col xs="12" sm="12" lg="6">
+              <Card className="bg-orange">
+                <CardHeader className="text-white">
+                  <CardTitle className="mb-0">
+                    Verificaciones mensuales
+                  </CardTitle>
+                </CardHeader>
+                <CardBody className="text-dark">
+                  <div className="chart-wrapper" style={{ height: 300 + "px" }}>
+                    <Bar data={bar} options={barOptions} />
+                  </div>
+                  <Row className="text-center">
+                    <Col sm={12} md className="dummy-space" />
+                  </Row>
+                </CardBody>
+              </Card>
+            </Col>
+          </Row>
 
-        <Row>
-          <Col xs="12" sm="12" lg="6">
-            <Card>
-              <CardHeader className="text-white bg-primary">
-                <CardTitle className="mb-0">Validaciones recientes</CardTitle>
-              </CardHeader>
-              <CardBody className="text-dark">
-                <Table
-                  hover={true}
-                  responsive={true}
-                  className="table-outline mb-0 d-none d-sm-table"
-                >
-                  <thead className="thead-light">
-                    <tr>
-                      <th className="text-center">DNI</th>
-                      <th className="text-center">Sexo</th>
-                      <th>Fecha</th>
-                      <th className="text-center">%</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>30819310</td>
-                      <td>M</td>
-                      <td>31/05/2018 17:00:00</td>
-                      <td>95</td>
-                    </tr>
-                    <tr>
-                      <td>30819310</td>
-                      <td>M</td>
-                      <td>31/05/2018 17:00:00</td>
-                      <td>95</td>
-                    </tr>
-                  </tbody>
-                </Table>
-              </CardBody>
-            </Card>
-          </Col>
-
-          <Col xs="12" sm="12" lg="6">
-            <Card>
-              <CardTitle className="mt-2 ml-2">Browser Usage</CardTitle>
-              <CardBody className="text-dark">
-                <div className="chart-wrapper">
-                  <Doughnut data={doughnut} />
-                </div>
-                <Row className="text-center">
-                  <Col sm={12} md className="dummy-space" />
-                </Row>
-              </CardBody>
-            </Card>
-          </Col>
-        </Row>
-      </div>
+          <Row className="main-container">
+            <Col xs="12" sm="12" lg="6">
+                {this.renderTable()}
+            </Col>
+            <Col xs="12" sm="12" lg="6">
+              <Card className="container-no-overflow">
+                <CardTitle className="mt-2 ml-2">Browser Usage</CardTitle>
+                <CardBody className="text-dark">
+                  <div className="chart-wrapper">
+                    <Doughnut data={doughnut} />
+                  </div>
+                  <Row className="text-center">
+                    <Col sm={12} md className="dummy-space" />
+                  </Row>
+                </CardBody>
+              </Card>
+            </Col>
+          </Row>
+        </div>
       </DefaultLayout>
     );
   }

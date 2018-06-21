@@ -27,6 +27,14 @@ export function getUsers() {
 }
 
 /**
+ * Get dashboard data
+ * @returns {Promise}
+ */
+export function getDashboard() {
+    return doApiRequest('users/dashboard');
+}
+
+/**
  * Get config
  * @returns {Promise}
  */

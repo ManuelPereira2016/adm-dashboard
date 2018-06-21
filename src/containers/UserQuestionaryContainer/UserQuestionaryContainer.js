@@ -77,12 +77,12 @@ class UserQuestionaryContainer extends Component {
           message: ''
       });
 
-      console.log(this.data);
-
       if (this.isValid(this.data["preguntasYrespuestas"])) {
           const [err, data] = await to(validate(this.data));
 
           if (err) message = "Algo raro ocurrio con el servidor.";
+
+          message = data.data;
       }
       else {
           message = "Debe responder todas las preguntas.";
