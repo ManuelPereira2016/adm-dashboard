@@ -66,13 +66,13 @@ class UserRecovery extends Component {
                         </Col>
                         </Row>
                       </FormGroup>
-                      {this.props.message ? (
-                        <UncontrolledAlert color="info">
-                          {this.props.message}
-                        </UncontrolledAlert>
-                      ) : null}
                     </CardBody>
                     <div className="pb-3 pr-3 pl-3 pt-3 text-center">
+                    {this.props.message ? (
+                        <UncontrolledAlert className="text-left" color="info">
+                        {this.props.message}
+                        </UncontrolledAlert>
+                    ) : null}
                     <FormText className="help-block pb-1">
                     Usted recibira un correo con instrucciones.
                     </FormText>

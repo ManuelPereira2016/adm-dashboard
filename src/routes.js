@@ -9,6 +9,7 @@ import {
   LoginContainer,
   CreateUserContainer,
   AdminListsContainer,
+  PasswordResetContainer,
   AdminUsersContainer,
   AdminSettingsContainer,
   AdminRoute
@@ -258,6 +259,7 @@ const routes = [
   },
   { path: "/user/form", name: "Formulario", component: UserFormContainer },
   { path: "/user/forget-password", name: "Recuperar su contraseña", component: UserRecoveryContainer },
+  { path: "/user/change-password", name: "Cambiar contraseña", component: PasswordResetContainer },
   { path: "/404", name: "Pagina 404", component: Page404 },
   { path: "/500", name: "Pagina 500", component: Page500 },
   { path: "/register", name: "Dar de alta", component: CreateUserContainer }

@@ -27,7 +27,10 @@ import DefaultLayout from "../../../containers/DefaultLayout";
 class AdminUsers extends Component {
   static propTypes = {
     goToHighUserForm: PropTypes.func.isRequired,
+    sendEmailRecovery: PropTypes.func.isRequired,
     isLoading: PropTypes.bool.isRequired,
+    selectedUser: PropTypes.number,
+    isProcessing: PropTypes.bool.isRequired,
     users: PropTypes.array.isRequired
   };
 
@@ -76,20 +79,27 @@ class AdminUsers extends Component {
     return (
       <tr key={`id_${user.id_usuario}`}>
         <td>{user.email}</td>
-        <td>{user.nombre + ' ' + user.apellidos}</td>
+        <td>{user.nombre + " " + user.apellidos}</td>
         <td>{user.id_servicio}</td>
         <td className="icon-action">
-            <a href='#' onClick={(e) => this.props.openModifyForm(e, user)} >
-                <i className="icon-pencil" id="tip-action-2" />
-            </a>
+          <a href="#" onClick={e => this.props.openModifyForm(e, user)}>
+            <i className="icon-pencil" id="tip-action-2" />
+          </a>
           <UncontrolledTooltip placement="top" target="tip-action-2">
             Modificar
           </UncontrolledTooltip>
         </td>
         <td className="icon-action">
-            <a href='#' onClick={(e) => this.props.openModifyForm(e, user.id_usuario)} >
-                <i className="icon-key" id="tip-action-3" />
-            </a>
+          <a
+            href="#"
+            onClick={e => this.props.sendEmailRecovery(e, user)}
+          >
+            {this.props.isProcessing && user.id_usuario === this.props.selectedUser ? (
+              <MDSpinner size={15} singleColor="#1985ac" className="mr-1" />
+            ) : (
+              <i className="icon-key" id="tip-action-3" />
+            )}
+          </a>
           <UncontrolledTooltip placement="top" target="tip-action-3">
             Blanquear clave
           </UncontrolledTooltip>

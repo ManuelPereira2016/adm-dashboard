@@ -49,10 +49,7 @@ class UserRecoveryContainer extends Component {
 
       if (err) message = "Ocurrio un error con el servidor.";
 
-      if (data.error) {
-          message = data.data;
-      }
-      else {
+      if (data) {
           message = data.data;
       }
 

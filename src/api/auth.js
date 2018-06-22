@@ -23,5 +23,13 @@ export function getAuthData() {
  * @returns {Promise}
  */
 export function sendRecovery(email) {
-    return doApiRequest('users/recovery', { email }, "POST");
+    return doApiRequest('users/forgot', { email }, "POST");
+}
+
+/**
+ * Send password and confirmed password to change.
+ * @returns {Promise}
+ */
+export function changePassword(token, data) {
+    return doApiRequest(`users/reset/${token}`, data, "POST");
 }
