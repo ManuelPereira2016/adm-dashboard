@@ -20,6 +20,7 @@ class Login extends Component {
   static propTypes = {
     onSubmit: PropTypes.func.isRequired,
     errorMessage: PropTypes.string.isRequired,
+    onPasswordForget: PropTypes.func.isRequired,
     isProcessing: PropTypes.bool.isRequired
   };
 
@@ -81,7 +82,7 @@ class Login extends Component {
                     }
                     <Row>
                       <Col xs="6" className="text-left">
-                        <Button color="link" className="px-0">
+                        <Button onClick={this.props.onPasswordForget} color="link" className="px-0">
                           Olvidaste tu contrasena?
                         </Button>
                       </Col>

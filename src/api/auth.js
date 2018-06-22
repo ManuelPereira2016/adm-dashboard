@@ -17,3 +17,11 @@ export function login(email, password) {
 export function getAuthData() {
     return doApiRequest('users/auth');
 }
+
+/**
+ * Send an email to recovery the user password.
+ * @returns {Promise}
+ */
+export function sendRecovery(email) {
+    return doApiRequest('users/recovery', { email }, "POST");
+}

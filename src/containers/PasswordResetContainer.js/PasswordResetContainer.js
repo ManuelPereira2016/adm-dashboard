@@ -8,7 +8,7 @@ import { getErrorMessage, getIsAuthedFlag, getIsAuthenticatingFlag, getIsAdminFl
 import { handleLogin, isAuthed } from '../../redux/modules/actionsCreators/authentication';
 import { getLoginToken } from "../../utils/utils";
 
-class LoginContainer extends Component {
+class PasswordResetContainer extends Component {
   static propTypes = {
     history: PropTypes.object.isRequired,
     isAuthed: PropTypes.bool.isRequired,
@@ -61,15 +61,10 @@ class LoginContainer extends Component {
       this.props.dispatch(handleLogin(email, password));
   };
 
-  onPasswordForget = () => {
-      this.props.dispatch(push("/user/forget-password"));
-  }
-
   render() {
     return (
         <Login
             onSubmit={this.onLogin}
-            onPasswordForget={this.onPasswordForget}
             errorMessage={this.props.errorMessage}
             isProcessing={this.props.isAuthenticating} />
     );
@@ -85,4 +80,4 @@ function mapStateToProps(state) {
     }
 }
 
-export default connect(mapStateToProps)(LoginContainer);
+export default connect(mapStateToProps)(PasswordResetContainer);
