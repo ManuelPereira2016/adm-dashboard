@@ -28,9 +28,11 @@ class AdminUsers extends Component {
   static propTypes = {
     goToHighUserForm: PropTypes.func.isRequired,
     sendEmailRecovery: PropTypes.func.isRequired,
+    onDeleteUser: PropTypes.func.isRequired,
     isLoading: PropTypes.bool.isRequired,
     selectedUser: PropTypes.number,
     isProcessing: PropTypes.bool.isRequired,
+    isRemoveProcessing: PropTypes.bool.isRequired,
     users: PropTypes.array.isRequired
   };
 
@@ -63,6 +65,12 @@ class AdminUsers extends Component {
               </UncontrolledTooltip>
             </th>
             <th>
+              <i className="fa fa-trash" id="tip-trash" />
+              <UncontrolledTooltip placement="top" target="tip-trash">
+                Dar de baja
+              </UncontrolledTooltip>
+            </th>
+            <th>
               <i className="icon-key" id="tip-wipe" />
               <UncontrolledTooltip placement="top" target="tip-wipe">
                 Blanquear clave
@@ -83,10 +91,22 @@ class AdminUsers extends Component {
         <td>{user.id_servicio}</td>
         <td className="icon-action">
           <a href="#" onClick={e => this.props.openModifyForm(e, user)}>
-            <i className="icon-pencil" id="tip-action-2" />
+            <i className="icon-pencil" id={`tip-action-2-${user.id_usuario}`} />
           </a>
-          <UncontrolledTooltip placement="top" target="tip-action-2">
+          <UncontrolledTooltip placement="top" target={`tip-action-2-${user.id_usuario}`}>
             Modificar
+          </UncontrolledTooltip>
+        </td>
+        <td className="icon-action">
+          <a href="#" onClick={e => this.props.onDeleteUser(e, user)}>
+            {this.props.isRemoveProcessing && user.id_usuario === this.props.selectedUser ? (
+              <MDSpinner size={15} singleColor="#1985ac" className="mr-1" />
+            ) : (
+              <i className="fa fa-trash" id={`tip-action-1-${user.id_usuario}`} />
+            )}
+          </a>
+          <UncontrolledTooltip placement="top" target={`tip-action-1-${user.id_usuario}`}>
+            Dar de baja
           </UncontrolledTooltip>
         </td>
         <td className="icon-action">
@@ -97,10 +117,10 @@ class AdminUsers extends Component {
             {this.props.isProcessing && user.id_usuario === this.props.selectedUser ? (
               <MDSpinner size={15} singleColor="#1985ac" className="mr-1" />
             ) : (
-              <i className="icon-key" id="tip-action-3" />
+              <i className="icon-key" id={`tip-action-3-${user.id_usuario}`} />
             )}
           </a>
-          <UncontrolledTooltip placement="top" target="tip-action-3">
+          <UncontrolledTooltip placement="top" target={`tip-action-3-${user.id_usuario}`}>
             Blanquear clave
           </UncontrolledTooltip>
         </td>

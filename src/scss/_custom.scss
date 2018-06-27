@@ -165,3 +165,27 @@
     max-height: 300px;
     overflow-y: auto;
 }
+
+.big-icon {
+  font-size: 5em;
+}
+
+.success-icon {
+  @extend .big-icon;
+  color: #20a8d8;
+
+  &::after {
+    font-family: "FontAwesome";
+    content: "\f058";
+  }
+}
+
+.fail-icon {
+  @extend .big-icon;
+  color: #f86c6b;
+
+  &::after {
+    font-family: "FontAwesome";
+    content: "\f05e";
+  }
+}

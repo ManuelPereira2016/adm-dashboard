@@ -35,21 +35,6 @@ const doughnut = {
   ]
 };
 
-const bar = {
-  labels: ["January", "February", "March", "April", "May", "June", "July"],
-  datasets: [
-    {
-      label: "My First dataset",
-      backgroundColor: "#63c2de",
-      borderColor: "#63c2de",
-      borderWidth: 1,
-      hoverBackgroundColor: "#20a8d8",
-      hoverBorderColor: "#20a8d8",
-      data: [65, 59, 80, 81, 56, 55, 40]
-    }
-  ]
-};
-
 // Card Chart 1
 const cardChartData1 = {
   labels: ["January", "February", "March", "April", "May", "June", "July"],
@@ -395,55 +380,6 @@ const sparklineChartOpts = {
   }
 };
 
-// Main Chart
-
-//Random Numbers
-function random(min, max) {
-  return Math.floor(Math.random() * (max - min + 1) + min);
-}
-
-var elements = 27;
-var data1 = [];
-var data2 = [];
-var data3 = [];
-
-for (var i = 0; i <= elements; i++) {
-  data1.push(random(50, 200));
-  data2.push(random(80, 100));
-  data3.push(65);
-}
-
-const mainChart = {
-  labels: ["1", "2", "3", "4", "5", "6", "7"],
-  datasets: [
-    {
-      label: "My First dataset",
-      backgroundColor: hexToRgba(brandInfo, 10),
-      borderColor: brandInfo,
-      pointHoverBackgroundColor: "#fff",
-      borderWidth: 2,
-      data: data1
-    },
-    {
-      label: "My Second dataset",
-      backgroundColor: "transparent",
-      borderColor: brandSuccess,
-      pointHoverBackgroundColor: "#fff",
-      borderWidth: 2,
-      data: data2
-    },
-    {
-      label: "My Third dataset",
-      backgroundColor: "transparent",
-      borderColor: brandDanger,
-      pointHoverBackgroundColor: "#fff",
-      borderWidth: 1,
-      borderDash: [8, 5],
-      data: data3
-    }
-  ]
-};
-
 const barOptions = {
   tooltips: {
     enabled: false,
@@ -452,62 +388,16 @@ const barOptions = {
   maintainAspectRatio: false
 };
 
-const mainChartOpts = {
-  tooltips: {
-    enabled: false,
-    custom: CustomTooltips,
-    intersect: true,
-    mode: "index",
-    position: "nearest",
-    callbacks: {
-      labelColor: function(tooltipItem, chart) {
-        return {
-          backgroundColor:
-            chart.data.datasets[tooltipItem.datasetIndex].borderColor
-        };
-      }
-    }
-  },
-  maintainAspectRatio: false,
-  legend: {
-    display: false
-  },
-  scales: {
-    xAxes: [
-      {
-        gridLines: {
-          drawOnChartArea: false
-        }
-      }
-    ],
-    yAxes: [
-      {
-        ticks: {
-          beginAtZero: true,
-          maxTicksLimit: 5,
-          stepSize: Math.ceil(250 / 5),
-          max: 250
-        }
-      }
-    ]
-  },
-  elements: {
-    point: {
-      radius: 0,
-      hitRadius: 10,
-      hoverRadius: 4,
-      hoverBorderWidth: 3
-    }
-  }
-};
-
 class DashboardHome extends Component {
   static propTypes = {
     total: PropTypes.number.isRequired,
     aprobado: PropTypes.number.isRequired,
     desaprobado: PropTypes.number.isRequired,
     costo: PropTypes.number.isRequired,
-    ultimos: PropTypes.array.isRequired
+    mainChartOpts: PropTypes.object.isRequired,
+    barOpts: PropTypes.object.isRequired,
+    ultimos: PropTypes.array.isRequired,
+    dailyChart: PropTypes.object.isRequired
   };
 
   constructor(props) {
@@ -523,8 +413,8 @@ class DashboardHome extends Component {
   }
 
   renderRows() {
-      const validaciones = (validacion) => (
-          <tr key={`id_${validacion.fecha}`}>
+      const validaciones = (validacion, index) => (
+          <tr key={`id_${index}`}>
             <td className="text-center">{validacion.dni}</td>
             <td className="text-center">{validacion.sexo}</td>
             <td className="text-center">{moment(validacion.fecha).format("DD-MM-YYYY HH:ss")}</td>
@@ -532,7 +422,7 @@ class DashboardHome extends Component {
           </tr>
       );
 
-      return this.props.ultimos.map(validacion => validaciones(validacion));
+      return this.props.ultimos.map((validacion,index) => validaciones(validacion, index));
   }
 
   renderTable() {
@@ -587,6 +477,8 @@ class DashboardHome extends Component {
   }
 
   render() {
+    const { dailyChart, bar, mainChartOpts, barOpts } = this.props;
+
     return (
       <DefaultLayout>
         <div className="animated fadeIn">
@@ -637,7 +529,7 @@ class DashboardHome extends Component {
                 <CardBody className="text-dark">
                   <div className="chart-wrapper" style={{ height: 300 + "px" }}>
                     <Line
-                      data={mainChart}
+                      data={dailyChart}
                       options={mainChartOpts}
                       height={300}
                     />

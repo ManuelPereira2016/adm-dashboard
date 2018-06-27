@@ -15,6 +15,9 @@ class UserQuestionaryContainer extends Component {
 
   state = {
       message: '',
+      hasSuccess: false,
+      nextPage: false,
+      idValidacion: 0,
       isProcessing: false
   }
 
@@ -45,6 +48,10 @@ class UserQuestionaryContainer extends Component {
       }
   }
 
+  onBack = () => {
+    this.props.dispatch(push("/user/form"));
+  }
+
   loginCheck(props) {
       const authToken = getLoginToken();
 
@@ -70,7 +77,10 @@ class UserQuestionaryContainer extends Component {
   };
 
   onSubmit = async () => {
-      let message = '';
+      let message = '',
+          hasSuccess = false,
+          idValidacion = 0,
+          nextPage = false;
 
       await this.setState({
           isProcessing: true,
@@ -80,16 +90,32 @@ class UserQuestionaryContainer extends Component {
       if (this.isValid(this.data["preguntasYrespuestas"])) {
           const [err, data] = await to(validate(this.data));
 
-          if (err) message = "Algo raro ocurrio con el servidor.";
+          if (err) {
+            message = "Algo raro ocurrio con el servidor.";
+          }
+          else {
+            nextPage = true;
 
-          message = data.data;
+            if (data.error) {
+              message = `Desaprobado! ${data.data}`;
+            }
+            else {
+              message = "Aprobado! Tome nota de su ID de consulta";
+              idValidacion = data.idconsulta;
+
+              hasSuccess = true;
+            }
+          }
       }
       else {
           message = "Debe responder todas las preguntas.";
       }
 
       this.setState({
+          hasSuccess,
           message,
+          nextPage,
+          idValidacion,
           isProcessing: false
       });
   }
@@ -99,9 +125,13 @@ class UserQuestionaryContainer extends Component {
         <UserQuestionary
             isProcessing={this.state.isProcessing}
             message={this.state.message}
+            hasSuccess={this.state.hasSuccess}
             form={this.questions_answers}
             onSubmit={this.onSubmit}
+            onBack={this.onBack}
+            idValidacion={this.idValidacion}
             onChange={this.onChange}
+            nextPage={this.state.nextPage}
             onLogout={this.onLogout}/>
     );
   }

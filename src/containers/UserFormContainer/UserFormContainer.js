@@ -46,32 +46,37 @@ class UserFormContainer extends Component {
   };
 
   onSubmit = async (form) => {
-      let message = '';
+      let message = "";
 
       await this.setState({
           isProcessing: true,
-          message: ''
+          message
       });
 
       if (form.sexo.value === "0" || !form.dni.value) {
           return false;
       }
 
-      let formData = { documento: form.dni.value, sexo: form.sexo.value, servicio: this.props.userData.id_servicio };
+      let formData = { documento: form.dni.value, sexo: form.sexo.value, servicio: this.props.userData.id_servicio, email: this.props.userData.email };
 
       const [err, data] = await to(setQuestions(formData));
 
-      if (err) message = "Ocurrio un error inesperado en el servidor.";
+      if (err) {
+        message = "Ocurrio un error inesperado en el servidor.";
+      }
+      else {
+        if (data.error) {
+          message = "Hubo un problema con tus datos.";
 
-      if (data) {
-          if (data.message) {
-              message = data.message;
+          if (data.data) {
+            message = data.data;
           }
-          else {
-              this.props.dispatch(push("/user/questionary", {...data.campos, formData, idconsulta: data.idconsulta}));
+        }
+        else {
+          this.props.dispatch(push("/user/questionary", {...data.campos, formData, idconsulta: data.idconsulta}));
 
-              return false;
-          }
+          return false;
+        }
       }
 
       this.setState({

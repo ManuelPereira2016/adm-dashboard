@@ -90,6 +90,16 @@ class AdminListsContainer extends Component {
     }
   }
 
+  getCurrentFlagsIn(field) {
+    let count = 0;
+
+    for (let question in this.state.questions) {
+      this.state.questions[question][field] ? count++ : null;
+    }
+
+    return count;
+  }
+
   onServiceSelect = async event => {
     await this.setState({
       selectedService: event.target.value
@@ -103,6 +113,17 @@ class AdminListsContainer extends Component {
     const value = target.type === "checkbox" ? target.checked : target.value;
     const name = target.name;
     const { questions } = this.state;
+
+    if (name === "revancha") {
+      const revanchaCount = this.getCurrentFlagsIn("revancha");
+
+      if (revanchaCount) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        return false;
+      }
+    }
 
     this.setState({
       questions: {
@@ -161,6 +182,16 @@ class AdminListsContainer extends Component {
     });
   };
 
+  getCurrentActive() {
+    let count = 0;
+
+    for (let q in this.state.questions) {
+      this.state.questions[q].active ? count++ : null;
+    }
+
+    return count;
+  }
+
   handleSubmit = async () => {
       let data = {
           id_servicio: this.state.selectedService,
@@ -172,10 +203,21 @@ class AdminListsContainer extends Component {
           questions: this.state.questions
       };
 
-      this.setState({
+      await this.setState({
           message: '',
           isProcessing: true
       });
+
+      const activeCount = this.getCurrentActive();
+
+      if (parseInt(this.state.questionsCount) > activeCount) {
+        this.setState({
+          message: "La cantidad de preguntas a mostrar es mayor al numero de preguntas activas!, active las preguntas necesarias.",
+          isProcessing: false
+        });
+
+        return false;
+      }
 
       const [err, response] = await to(saveConfig(data));
 

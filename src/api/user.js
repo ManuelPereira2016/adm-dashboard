@@ -19,6 +19,15 @@ export function updateUser(data) {
 }
 
 /**
+ * Remove an existing user
+ * @param {Object} data
+ * @returns {Promise}
+ */
+export function removeUser(data) {
+    return doApiRequest('users/delete', data, 'POST');
+}
+
+/**
  * Get all users
  * @returns {Promise}
  */
