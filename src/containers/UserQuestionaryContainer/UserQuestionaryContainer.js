@@ -9,7 +9,6 @@ import to from "await-to-js";
 
 class UserQuestionaryContainer extends Component {
   static propTypes = {
-    history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired
   };
 
@@ -18,6 +17,8 @@ class UserQuestionaryContainer extends Component {
       hasSuccess: false,
       nextPage: false,
       idValidacion: 0,
+      data: {},
+      questions_answers: [],
       isProcessing: false
   }
 
@@ -25,27 +26,32 @@ class UserQuestionaryContainer extends Component {
       super(props);
 
       this.loginCheck(props);
+  }
 
-      this.questions_answers = [];
-      this.data = {};
+  componentDidMount() {
+    if (this.props.location.state) {
+      const form = this.props.location.state;
 
-      if (this.props.location.state) {
-        const form = this.props.location.state;
+      const questions_answers = form.preguntaYRespuesta;
+      const formData = { ...form.formData };
 
-        this.questions_answers = form.preguntaYRespuesta;
+      const data = {};
 
-        this.data = { ...form.formData };
+      data["idconsulta"] = form.idconsulta;
+      data["preguntasYrespuestas"] = [];
 
-        this.data["idconsulta"] = form.idconsulta;
-        this.data["preguntasYrespuestas"] = [];
+      questions_answers.forEach((field) => {
+          data["preguntasYrespuestas"].push({ "pregunta": field.ID, "respuesta": null });
+      });
 
-        this.questions_answers.forEach((field) => {
-            this.data["preguntasYrespuestas"].push({ "pregunta": field.ID, "respuesta": null });
-        });
-      }
-      else {
-          props.dispatch(push('/user/form'));
-      }
+      this.setState({
+        questions_answers,
+        data
+      });
+    }
+    else {
+        this.props.dispatch(push('/user/form'));
+    }
   }
 
   onBack = () => {
@@ -65,9 +71,9 @@ class UserQuestionaryContainer extends Component {
   }
 
   onChange = (value, id) => {
-      let index = this.data["preguntasYrespuestas"].findIndex(field => field.pregunta === id);
+      let index = this.state.data["preguntasYrespuestas"].findIndex(field => field.pregunta === id);
 
-      this.data["preguntasYrespuestas"][index]["respuesta"] = value;
+      this.state.data["preguntasYrespuestas"][index]["respuesta"] = value;
   }
 
   onLogout = () => {
@@ -87,23 +93,42 @@ class UserQuestionaryContainer extends Component {
           message: ''
       });
 
-      if (this.isValid(this.data["preguntasYrespuestas"])) {
-          const [err, data] = await to(validate(this.data));
+      if (this.isValid(this.state.data["preguntasYrespuestas"])) {
+          const [err, data] = await to(validate(this.state.data));
 
           if (err) {
             message = "Algo raro ocurrio con el servidor.";
           }
           else {
-            nextPage = true;
+            if (data.campos) {
+              const { preguntaYRespuesta } = data.campos;
 
-            if (data.error) {
-              message = `Desaprobado! ${data.data}`;
+              let dataStore = [];
+
+              preguntaYRespuesta.forEach((field) => {
+                  dataStore.push({ "pregunta": field.ID, "respuesta": null });
+              });
+
+              await this.setState({
+                questions_answers: preguntaYRespuesta,
+                data: {
+                  ...this.state.data,
+                  preguntasYrespuestas: dataStore
+                }
+              });
             }
             else {
-              message = "Aprobado! Tome nota de su ID de consulta";
-              idValidacion = data.idconsulta;
+              nextPage = true;
 
-              hasSuccess = true;
+              if (data.error) {
+                message = `Desaprobado! ${data.data}`;
+              }
+              else {
+                message = "Aprobado! Tome nota de su ID de consulta";
+                idValidacion = data.idconsulta;
+
+                hasSuccess = true;
+              }
             }
           }
       }
@@ -126,7 +151,7 @@ class UserQuestionaryContainer extends Component {
             isProcessing={this.state.isProcessing}
             message={this.state.message}
             hasSuccess={this.state.hasSuccess}
-            form={this.questions_answers}
+            form={this.state.questions_answers}
             onSubmit={this.onSubmit}
             onBack={this.onBack}
             idValidacion={this.idValidacion}
