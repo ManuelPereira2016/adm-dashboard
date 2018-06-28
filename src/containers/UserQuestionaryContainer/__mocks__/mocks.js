@@ -56,3 +56,23 @@ export const locationMockup = {
   },
   key: "51lo3s"
 };
+
+export const revengeMockup = {
+  "error": 1,
+  "status": 201,
+  "data": "El puntaje no es suficiente pero voy a devolver preguntas para revancha",
+  "idconsulta": "13",
+  "campos": {
+      "preguntaYRespuesta": [
+          {
+              "0": "30/04/1991",
+              "1": "08/09/1991",
+              "2": "16/01/1991",
+              "3": "Ninguna es correcta",
+              "ID": "3",
+              "pregunta": "Su fecha de nacimiento es:"
+          }
+      ],
+      "persona": true
+  }
+}
