@@ -2,7 +2,7 @@
 import axios from 'axios';
 import { getLoginToken } from '../utils/utils';
 
-const API = 'https://api2.auntenticartuid.com/';
+const API = 'https://api2.autenticartuid.com/';
 
 /**
  * Method for making ajax calls to the site's api
