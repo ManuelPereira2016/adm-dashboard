@@ -83,3 +83,10 @@ export const revengeMockup = {
       "persona": true
   }
 }
+
+export const mockRevenge = {
+  "error": 0,
+  "status": 200,
+  "data": "Aprobado!",
+  "idconsulta": "22"
+}

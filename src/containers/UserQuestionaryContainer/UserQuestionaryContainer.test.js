@@ -3,11 +3,19 @@ import ReactDOM from 'react-dom';
 import UserQuestionaryContainer from './UserQuestionaryContainer';
 import configureStore from 'redux-mock-store';
 import { shallow, mount } from 'enzyme';
-import { locationMockup, revengeMockup, approvedMockup } from "./__mocks__/mocks";
+import { locationMockup, revengeMockup, approvedMockup, mockRevenge } from "./__mocks__/mocks";
 import UserQuestionary from "../../views/Pages/UserQuestionary/UserQuestionary";
 import {  Button, Label } from "reactstrap";
 import { RadioGroup, Radio } from "react-radio-group";
 import doApiRequest from '../../api/doApiRequest';
+import { revenge } from "../../api/validation";
+
+jest.mock("../../api/validation", () => {
+  return {
+    ...require.requireActual("../../api/validation"),
+    revenge: () => Promise.resolve(mockRevenge)
+  };
+});
 
 jest.mock('../../api/doApiRequest');
 
@@ -87,6 +95,31 @@ describe('Container component)',() => {
 
     expect(container.state().questions_answers).toEqual(revengeMockup.campos.preguntaYRespuesta)
     expect(container.find(RadioGroup).length).toEqual(1)
-    expect(container.find(Label).at(0).text()).toEqual("Su fecha de nacimiento es:")
+    expect(container.find(Label).at(0).text()).toEqual("Su fecha de nacimiento es:");
+    expect(container.state().data.preguntasYrespuestas.length).toEqual(1);
   });
+
+  it('It should submit the revenge to the right place', async () => {
+    doApiRequest.mockImplementation(() => Promise.resolve(revengeMockup));
+
+    const questions = () => container.state().data["preguntasYrespuestas"].map(question => question.pregunta);
+
+    questions().forEach((q, i) => {
+      container.find(RadioGroup).at(i).props().onChange(0, `${q}`);
+    });
+
+    await container.find(Button).props().onClick();
+    container.update();
+
+    container.find(RadioGroup).at(0).props().onChange(0, "3");
+
+    expect(container.state().data.preguntasYrespuestas[0].respuesta).toEqual(0);
+
+    await container.find(Button).props().onClick();
+    container.update();
+
+    expect(container.state().message).toEqual("Aprobado! Tome nota de su ID de consulta");
+    expect(container.find("h1").text()).toEqual("22");
+  });
+
 });

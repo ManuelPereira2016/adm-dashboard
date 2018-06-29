@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import UserQuestionary from "../../views/Pages/UserQuestionary/UserQuestionary";
 import { removeLoginToken, getLoginToken } from "../../utils/utils";
-import { validate } from "../../api/validation";
+import { validate, revenge } from "../../api/validation";
 import { connect } from "react-redux";
 import { push } from 'connected-react-router';
 import to from "await-to-js";
@@ -18,6 +18,7 @@ class UserQuestionaryContainer extends Component {
       nextPage: false,
       idValidacion: 0,
       data: {},
+      shouldSubmitRevenge: false,
       questions_answers: [],
       isProcessing: false
   }
@@ -86,13 +87,20 @@ class UserQuestionaryContainer extends Component {
           idValidacion = 0,
           nextPage = false;
 
+      let err = null, data = null;
+
       await this.setState({
           isProcessing: true,
           message: ''
       });
 
       if (this.isValid(this.state.data["preguntasYrespuestas"])) {
-          const [err, data] = await to(validate(this.state.data));
+          if (this.state.shouldSubmitRevenge) {
+            [err, data] = await to(revenge(this.state.data));
+          }
+          else {
+            [err, data] = await to(validate(this.state.data));
+          }
 
           if (err) {
             message = "Algo raro ocurrio con el servidor.";
@@ -108,6 +116,7 @@ class UserQuestionaryContainer extends Component {
               });
 
               await this.setState({
+                shouldSubmitRevenge: true,
                 questions_answers: preguntaYRespuesta,
                 data: {
                   ...this.state.data,
