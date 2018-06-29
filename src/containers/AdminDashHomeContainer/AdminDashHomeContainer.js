@@ -95,6 +95,15 @@ const barOpts = () => ({
     enabled: false,
     custom: CustomTooltips
   },
+  scales: {
+    yAxes: [
+      {
+        ticks: {
+          beginAtZero: true
+        }
+      }
+    ]
+  },
   maintainAspectRatio: false
 });
 

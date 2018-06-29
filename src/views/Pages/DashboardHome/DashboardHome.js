@@ -380,14 +380,6 @@ const sparklineChartOpts = {
   }
 };
 
-const barOptions = {
-  tooltips: {
-    enabled: false,
-    custom: CustomTooltips
-  },
-  maintainAspectRatio: false
-};
-
 class DashboardHome extends Component {
   static propTypes = {
     total: PropTypes.number.isRequired,
@@ -559,7 +551,7 @@ class DashboardHome extends Component {
                 </CardHeader>
                 <CardBody className="text-dark">
                   <div className="chart-wrapper" style={{ height: 300 + "px" }}>
-                    <Bar data={bar} options={barOptions} />
+                    <Bar data={bar} options={barOpts} />
                   </div>
                   <Row className="text-center">
                     <Col sm={12} md className="dummy-space" />
