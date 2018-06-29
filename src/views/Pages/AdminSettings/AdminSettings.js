@@ -305,9 +305,9 @@ class AdminSettings extends Component {
                 ? this.renderLoading()
                 : this.renderContent()}
               {this.props.message ? (
-                <UncontrolledAlert color="info">
+                <div className="p-4"><UncontrolledAlert color="info">
                   {this.props.message}
-                </UncontrolledAlert>
+                </UncontrolledAlert></div>
               ) : null}
               {this.props.selectedService &&
               !this.props.isQuestionsLoading &&
