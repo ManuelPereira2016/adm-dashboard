@@ -30,6 +30,27 @@ import MDSpinner from "react-md-spinner";
 import Rating from "react-rating";
 import Slider from "react-rangeslider";
 
+class CustomSwitch extends Component {
+  render() {
+    return (
+      <label className="mx-1 switch switch-pill switch-primary form-check-label">
+        <input
+          type="checkbox"
+          className="switch-input form-check-input"
+          checked={this.props.checked}
+          name={this.props.name}
+          onChange={this.props.onChange}
+        />
+        <span
+          className="switch-slider"
+          data-checked="On"
+          data-unchecked="Off"
+        />
+      </label>
+    );
+  }
+}
+
 class AdminSettings extends Component {
   static propTypes = {
     isServicesLoading: PropTypes.bool.isRequired,
@@ -40,6 +61,7 @@ class AdminSettings extends Component {
     attemptsCount: PropTypes.number,
     selectedService: PropTypes.string,
     message: PropTypes.string,
+    questionsRef: PropTypes.object,
     services: PropTypes.array.isRequired,
     questions: PropTypes.object.isRequired,
     onPercentageChange: PropTypes.func.isRequired,
@@ -87,17 +109,14 @@ class AdminSettings extends Component {
             name="activa"
             onChange={e => this.props.onChange(e, id)}
             color={"primary"}
-            checked={question.activa}
+            checked={question.activa ? true : false}
           />
         </td>
         <td className="text-center">
-          <AppSwitch
-            className={"mx-1"}
-            variant={"pill"}
+          <CustomSwitch
+            checked={question.revancha ? true : false}
             name="revancha"
             onChange={e => this.props.onChange(e, id)}
-            color={"primary"}
-            checked={question.revancha}
           />
         </td>
         <td className="text-center">
@@ -107,7 +126,7 @@ class AdminSettings extends Component {
             onChange={e => this.props.onChange(e, id)}
             variant={"pill"}
             color={"primary"}
-            checked={question.aleatoria}
+            checked={question.aleatoria ? true : false}
           />
         </td>
         <td className="text-center ">
@@ -144,7 +163,9 @@ class AdminSettings extends Component {
                     <th className="text-center">Ponderacion</th>
                   </tr>
                 </thead>
-                <tbody>{this.renderQuestions()}</tbody>
+                <tbody ref={this.props.questionsRef}>
+                  {this.renderQuestions()}
+                </tbody>
               </Table>
             </Col>
             {this.renderInfo()}

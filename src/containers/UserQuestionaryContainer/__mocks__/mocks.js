@@ -57,6 +57,13 @@ export const locationMockup = {
   key: "51lo3s"
 };
 
+export const approvedMockup = {
+   "error": 0,
+   "status": 200,
+   "data": "Aprobado!",
+   "idconsulta": "99"
+};
+
 export const revengeMockup = {
   "error": 1,
   "status": 201,

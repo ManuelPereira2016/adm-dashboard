@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import UserQuestionaryContainer from './UserQuestionaryContainer';
 import configureStore from 'redux-mock-store';
 import { shallow, mount } from 'enzyme';
-import { locationMockup, revengeMockup } from "./__mocks__/mocks";
+import { locationMockup, revengeMockup, approvedMockup } from "./__mocks__/mocks";
 import UserQuestionary from "../../views/Pages/UserQuestionary/UserQuestionary";
 import {  Button, Label } from "reactstrap";
 import { RadioGroup, Radio } from "react-radio-group";
@@ -47,7 +47,32 @@ describe('Container component)',() => {
     expect(container.state().data["preguntasYrespuestas"][3].respuesta).toEqual(null)
   });
 
-  it('It should submit and re-render new questions if user get a revenge chance', () => {
+  it('Data object in state should have all required fields before submit.', () => {
+    expect(container.state().data.sexo).toEqual(locationMockup.state.formData.sexo);
+    expect(container.state().data.servicio).toEqual(locationMockup.state.formData.servicio);
+    expect(container.state().data.documento).toEqual(locationMockup.state.formData.documento);
+    expect(container.state().data.email).toEqual(locationMockup.state.formData.email);
+  });
+
+  it('it has to show idconsulta value as response after submitting valid answers', async () => {
+    doApiRequest.mockImplementation(() => Promise.resolve(approvedMockup));
+
+    let questions = container.state().data["preguntasYrespuestas"].map(question => question.pregunta);
+
+    questions.forEach((q, i) => {
+      container.find(RadioGroup).at(i).props().onChange(0, `${q}`);
+    });
+
+    await container.find(Button).props().onClick();
+
+    container.update();
+
+    expect(container.state().idValidacion).toEqual(99);
+    expect(container.find("h1").text()).toEqual("99");
+    expect(container.find(".fail-icon").length).toEqual(0);
+  });
+
+  it('It should submit and re-render new questions if user get a revenge chance', async () => {
     doApiRequest.mockImplementation(() => Promise.resolve(revengeMockup));
 
     let questions = container.state().data["preguntasYrespuestas"].map(question => question.pregunta);
@@ -56,14 +81,12 @@ describe('Container component)',() => {
       container.find(RadioGroup).at(i).props().onChange(0, `${q}`);
     });
 
-    container.find(Button).props().onClick();
+    await container.find(Button).props().onClick();
 
-    setImmediate(() => {
-      container.update();
-      expect(container.state().questions_answers).toEqual(revengeMockup.campos.preguntaYRespuesta)
+    container.update();
 
-      expect(container.find(RadioGroup).length).toEqual(1)
-      expect(container.find(Label).at(0).text()).toEqual("Su fecha de nacimiento es:")
-    });
+    expect(container.state().questions_answers).toEqual(revengeMockup.campos.preguntaYRespuesta)
+    expect(container.find(RadioGroup).length).toEqual(1)
+    expect(container.find(Label).at(0).text()).toEqual("Su fecha de nacimiento es:")
   });
 });

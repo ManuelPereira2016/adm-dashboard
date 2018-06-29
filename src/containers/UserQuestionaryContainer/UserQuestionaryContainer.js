@@ -33,9 +33,7 @@ class UserQuestionaryContainer extends Component {
       const form = this.props.location.state;
 
       const questions_answers = form.preguntaYRespuesta;
-      const formData = { ...form.formData };
-
-      const data = {};
+      const data = { ...form.formData };
 
       data["idconsulta"] = form.idconsulta;
       data["preguntasYrespuestas"] = [];
@@ -125,7 +123,7 @@ class UserQuestionaryContainer extends Component {
               }
               else {
                 message = "Aprobado! Tome nota de su ID de consulta";
-                idValidacion = data.idconsulta;
+                idValidacion = parseInt(data.idconsulta, 10);
 
                 hasSuccess = true;
               }
@@ -154,7 +152,7 @@ class UserQuestionaryContainer extends Component {
             form={this.state.questions_answers}
             onSubmit={this.onSubmit}
             onBack={this.onBack}
-            idValidacion={this.idValidacion}
+            idValidacion={this.state.idValidacion}
             onChange={this.onChange}
             nextPage={this.state.nextPage}
             onLogout={this.onLogout}/>

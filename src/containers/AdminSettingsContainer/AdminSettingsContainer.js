@@ -5,11 +5,7 @@ import AdminSettings from "../../views/Pages/AdminSettings/AdminSettings";
 import { getServices } from "../../api/service";
 import { getConfig, saveConfig } from "../../api/user";
 
-class AdminListsContainer extends Component {
-  static propTypes = {
-    history: PropTypes.object.isRequired
-  };
-
+class AdminSettingsContainer extends Component {
   state = {
     isServicesLoading: true,
     isQuestionsLoading: false,
@@ -20,12 +16,16 @@ class AdminListsContainer extends Component {
     questionsCount: 0,
     lockTime: 0,
     attemptsCount: 0,
-    message: '',
+    message: "",
     services: [],
     questions: {}
   };
 
-  componentWillMount() {
+  constructor(props) {
+    super(props);
+
+    this.questionsRef = React.createRef();
+
     this.percentageLabels = {
       0: "Bajo",
       50: "Medio",
@@ -93,8 +93,8 @@ class AdminListsContainer extends Component {
   getCurrentFlagsIn(field) {
     let count = 0;
 
-    for (let question in this.state.questions) {
-      this.state.questions[question][field] ? count++ : null;
+    for (let q in this.state.questions) {
+      this.state.questions[q][field] ? count++ : null;
     }
 
     return count;
@@ -112,16 +112,15 @@ class AdminListsContainer extends Component {
     const target = event.target;
     const value = target.type === "checkbox" ? target.checked : target.value;
     const name = target.name;
-    const { questions } = this.state;
+    const questions = {...this.state.questions};
 
     if (name === "revancha") {
       const revanchaCount = this.getCurrentFlagsIn("revancha");
 
-      if (revanchaCount) {
-        event.preventDefault();
-        event.stopPropagation();
-
-        return false;
+      if (revanchaCount && value) {
+        for (let q in questions) {
+          questions[q]["revancha"] = false;
+        }
       }
     }
 
@@ -136,17 +135,17 @@ class AdminListsContainer extends Component {
     });
   };
 
-  onGeneralChange = (event, id) => {
+  onGeneralChange = event => {
     const target = event.target;
     const value = parseInt(target.value, 10);
     const name = target.name;
 
     if (value <= 0) {
-        return false;
+      return false;
     }
 
     this.setState({
-        [name]: value
+      [name]: value
     });
   };
 
@@ -186,53 +185,55 @@ class AdminListsContainer extends Component {
     let count = 0;
 
     for (let q in this.state.questions) {
-      this.state.questions[q].active ? count++ : null;
+      this.state.questions[q].activa ? count++ : null;
     }
 
     return count;
   }
 
   handleSubmit = async () => {
-      let data = {
-          id_servicio: this.state.selectedService,
-          por_validacion: this.state.percentageValue,
-          por_revancha: this.state.percentageRevancha,
-          cant_preg: this.state.questionsCount,
-          cant_intentos: this.state.attemptsCount,
-          t_desbloqueo: this.state.lockTime,
-          questions: this.state.questions
-      };
+    let data = {
+      id_servicio: this.state.selectedService,
+      por_validacion: this.state.percentageValue,
+      por_revancha: this.state.percentageRevancha,
+      cant_preg: this.state.questionsCount,
+      cant_intentos: this.state.attemptsCount,
+      t_desbloqueo: this.state.lockTime,
+      questions: this.state.questions
+    };
 
-      await this.setState({
-          message: '',
-          isProcessing: true
-      });
+    await this.setState({
+      message: "",
+      isProcessing: true
+    });
 
-      const activeCount = this.getCurrentActive();
+    const activeCount = this.getCurrentActive();
 
-      if (parseInt(this.state.questionsCount) > activeCount) {
-        this.setState({
-          message: "La cantidad de preguntas a mostrar es mayor al numero de preguntas activas!, active las preguntas necesarias.",
-          isProcessing: false
-        });
-
-        return false;
-      }
-
-      const [err, response] = await to(saveConfig(data));
-
-      if (err) return console.error(err);
-
+    if (parseInt(this.state.questionsCount) > activeCount) {
       this.setState({
-          message: response.data,
-          isProcessing: false
+        message:
+          "La cantidad de preguntas a mostrar es mayor al numero de preguntas activas!, active las preguntas necesarias.",
+        isProcessing: false
       });
+
+      return false;
+    }
+
+    const [err, response] = await to(saveConfig(data));
+
+    if (err) return console.error(err);
+
+    this.setState({
+      message: response.data,
+      isProcessing: false
+    });
   };
 
   render() {
     return (
       <AdminSettings
         questions={this.state.questions}
+        questionsRef={this.questionsRef}
         services={this.state.services}
         isServicesLoading={this.state.isServicesLoading}
         isQuestionsLoading={this.state.isQuestionsLoading}
@@ -258,4 +259,4 @@ class AdminListsContainer extends Component {
   }
 }
 
-export default AdminListsContainer;
+export default AdminSettingsContainer;
